@@ -1,0 +1,51 @@
+%%Basic article template for writing scientific articles in Finnish
+\documentclass[a4paper,11pt,finnish]{article}
+\usepackage[top=0.5in, bottom=1in, left=0.5in, right=0.5in]{geometry}
+\usepackage[T1]{fontenc}
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+\usepackage{ae}
+%\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc} % Skandeja varten
+\usepackage[finnish]{babel}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage[export]{adjustbox} % loads also graphicx
+\usepackage{url}
+\usepackage{lastpage}
+\usepackage{pgfgantt}
+\usepackage{subcaption}
+\usepackage{url}
+\usepackage{natbib}
+\usepackage{caption}
+\def\bibfont{\footnotesize}
+\renewcommand\bibname{\vspace*{-80mm}\scriptsize{References} \vspace*{-80mm}}
+\scriptsize
+
+\usepackage{color,soul}
+\newcommand{\hlc}[2][yellow]{{%
+    \colorlet{foo}{#1}%
+    \sethlcolor{foo}\hl{#2}}%
+}
+
+%\usepackage[skins]{tcolorbox}
+%\tcbset{commonstyle/.style={boxrule=0pt,sharp corners,enhanced jigsaw,nobeforeafter,boxsep=0pt,left=\fboxsep,right=\fboxsep}}
+%\newtcolorbox{mycolorbox}[1][]{commonstyle,#1}
+
+\usepackage{framed,xcolor}
+%\colorlet{shadecolor}{blue!20}
+\colorlet{shadecolor}{gray!30}
+
+\begin{document}
+
+{\setlength{\parindent}{0cm} \Large \textbf{\titletext{}}}\vspace{1mm}\\
+{\setlength{\parindent}{0cm} \textbf{Title}}\\
+{\setlength{\parindent}{0cm} Authors}\\
+%\hfill
+%\textbf{Jari Bj{\"o}rne}, {\setlength{\parindent}{0cm}\today}
+%\vspace{1mm}
+
+\content{}
+
+\end{document}

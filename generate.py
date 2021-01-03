@@ -105,16 +105,16 @@ def generateExercise(exercises, instructions, format, modes, modeTags, variants=
 def getNames(s):
     return [x.strip() for x in s.split(",") if x.strip() != ""]
 
+def generate(inPath, dataPath, scriptPath, outPath, outFormat):
+
+
 if __name__=="__main__":
     from optparse import OptionParser
     optparser = OptionParser()
-    #optparser.add_option("-e", "--examples", default="")
-    optparser.add_option("-x", "--exercises", default="")
-    optparser.add_option("-i", "--instructions", default=False, action="store_true")
+    optparser.add_option("-i", "--input", default=None, help="The input file in Markdown format")
+    optparser.add_option("-d", "--data", default=None, help="A data file in JSON format")
+    optparser.add_option("-o", "--output", default=None, help="The output file stem")
     optparser.add_option("-f", "--format", default="latex")
-    optparser.add_option("-d", "--modes", default="exercises,answers,solutions")
-    optparser.add_option("-t", "--modeTags", default='{"exercises":"tehtävät","answers":"vastaukset","solutions":"ratkaisut"}')
-    optparser.add_option("-v", "--variants", default=1, type=int)
     (options, args) = optparser.parse_args()
 
     #generateExamples(getNames(options.examples))
