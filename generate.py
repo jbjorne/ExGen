@@ -1,5 +1,6 @@
 import os
 import md
+import importlib
 
 def getExercises(exercises):
     if exercises != None:
@@ -11,10 +12,15 @@ def generate(inDir, exercises, outStem, outFormat, mode):
     content = []
     exercises = getExercises(exercises)
     for exercise in exercises:
-        content.append(md.parse(os.path.join(inDir, exercise + ".md")))
+        print("Reading exercise", exercise)
+        data = None
         pyPath = os.path.join(inDir, exercise + ".py")
         if os.path.exists(pyPath):
-            pass
+            print("Running", pyPath)
+            importName = "exercises_" + exercise
+            importlib.import_module(importName, pyPath)
+            data = eval(importName + "." + exercise + "()")
+        content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
     options = {}
     options["mode"] = mode

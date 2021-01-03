@@ -74,7 +74,7 @@ def calcDistances(persons, vectors, data, testCutoff):
 def makeData(seed):
     data = {}
     persons = []
-    rand = random.Random(seed)
+    rand = random.Random(seed if seed != None else 1)
     for i in range(6):
         person = OrderedDict()
         person["id"] = i + 1
@@ -102,7 +102,7 @@ def makeData(seed):
     data["asiakkaat"] = table.Table(rows, headers=True)
     return data
 
-def makeFeatureExercise(seed):
+def features(seed=None):
     data = None
     while data is None:
         try:
@@ -111,4 +111,4 @@ def makeFeatureExercise(seed):
         except ValidationError as e:
             print(e)
             seed = random.Random(seed).randrange(0, 9999999999999999)
-    return md.parse("features.md", data)
+    return data
