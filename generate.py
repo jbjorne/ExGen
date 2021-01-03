@@ -7,20 +7,27 @@ def getExercises(exercises):
         exercises = exercises.split(",")
     return exercises
 
+def execScript(function, scriptPath):
+    data = None
+    if os.path.exists(scriptPath):
+        print("Running script", scriptPath)
+        with open(scriptPath) as f:
+            code = compile(f.read(), scriptPath, 'exec')
+        scriptGlobals = {}
+        exec(code, scriptGlobals)
+        data = eval(function + "()", scriptGlobals)
+    return data
+
 def generate(inDir, exercises, outStem, outFormat, mode):
     assert os.path.isdir(inDir)
     content = []
     exercises = getExercises(exercises)
-    for exercise in exercises:
-        print("Reading exercise", exercise)
-        data = None
-        scriptPath = os.path.join(inDir, exercise + ".py")
-        if os.path.exists(scriptPath):
-            with open(scriptPath) as f:
-                code = compile(f.read(), scriptPath, 'exec')
-            scriptGlobals = {}
-            exec(code, scriptGlobals)
-            data = eval(exercise + "()", scriptGlobals)
+    for i in range(len(exercises)):
+        exercise = exercises[i]
+        print("-----", "Processing exercise", str(i+1) + "/" + str(len(exercises)), "'" + exercise + "'", "-----")
+        mdPath = os.path.join(inDir, exercise + ".py")
+        print("Reading exercise from", mdPath)
+        data = execScript(exercise, mdPath)
         content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
     options = {}
