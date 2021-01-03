@@ -14,14 +14,17 @@ def generate(inDir, exercises, outStem, outFormat, mode):
     for exercise in exercises:
         print("Reading exercise", exercise)
         data = None
-        pyPath = os.path.join(inDir, exercise + ".py")
-        if os.path.exists(pyPath):
-            with open(pyPath) as f:
-                code = compile(f.read(), "somefile.py", 'exec')
+        scriptPath = os.path.join(inDir, exercise + ".py")
+        if os.path.exists(scriptPath):
+            with open(scriptPath) as f:
+                code = compile(f.read(), scriptPath, 'exec')
             scriptGlobals = {}
             scriptLocals = {}
-            exec(code, scriptGlobals, scriptLocals)
-            data = scriptLocals[exercise]()
+            exec(code, scriptGlobals)
+            print(scriptGlobals.keys())
+            print(scriptLocals.keys())
+            data = eval(exercise + "()", scriptGlobals)
+            print(data)
         content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
     options = {}
