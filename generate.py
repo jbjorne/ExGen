@@ -16,10 +16,12 @@ def generate(inDir, exercises, outStem, outFormat, mode):
         data = None
         pyPath = os.path.join(inDir, exercise + ".py")
         if os.path.exists(pyPath):
-            print("Running", pyPath)
-            importName = "exercises_" + exercise
-            importlib.import_module(importName, pyPath)
-            data = eval(importName + "." + exercise + "()")
+            with open(pyPath) as f:
+                code = compile(f.read(), "somefile.py", 'exec')
+            scriptGlobals = {}
+            scriptLocals = {}
+            exec(code, scriptGlobals, scriptLocals)
+            data = scriptLocals[exercise]()
         content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
     options = {}
