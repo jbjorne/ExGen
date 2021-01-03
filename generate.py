@@ -19,12 +19,8 @@ def generate(inDir, exercises, outStem, outFormat, mode):
             with open(scriptPath) as f:
                 code = compile(f.read(), scriptPath, 'exec')
             scriptGlobals = {}
-            scriptLocals = {}
             exec(code, scriptGlobals)
-            print(scriptGlobals.keys())
-            print(scriptLocals.keys())
             data = eval(exercise + "()", scriptGlobals)
-            print(data)
         content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
     options = {}
