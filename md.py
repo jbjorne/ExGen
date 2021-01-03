@@ -27,9 +27,9 @@ def renderElements(elements, options):
 def renderDoc(elements, options):
     content = renderElements(elements, options)
     if options["format"] == "latex":   
-        with open("template.tex", "rt") as f:
+        with open(options["template"], "rt") as f:
             template = f.read()
-            template = template.replace("\\titletext{}", options["title"])
+            template = template.replace("\\titletext{}", options.get("title", "Exercises"))
             template = template.replace("\\content{}", content)
         if options["fileStem"] != None:
             with open(options["fileStem"] + ".tex", "wt") as f:

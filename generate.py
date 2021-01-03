@@ -1,17 +1,26 @@
 import os
 import md
 
+def getExercises(exercises):
+    if exercises != None:
+        exercises = exercises.split(",")
+    return exercises
+
 def generate(inDir, exercises, outStem, outFormat, mode):
     assert os.path.isdir(inDir)
     content = []
+    exercises = getExercises(exercises)
     for exercise in exercises:
-        content.append(md.parse(os.path.join(inDir, exercise)))
+        content.append(md.parse(os.path.join(inDir, exercise + ".md")))
         pyPath = os.path.join(inDir, exercise + ".py")
         if os.path.exists(pyPath):
             pass
     
+    options = {}
     options["mode"] = mode
+    options["format"] = outFormat
     options["answers"] = mode in ("answers", "solutions")
+    options["template"] = "templates/template.tex"
     options["fileStem"] = outStem
     md.renderDoc(content, options)
 
