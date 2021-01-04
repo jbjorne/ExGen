@@ -94,20 +94,17 @@ class Renderer:
             if len(linkArgs) > 0:
                 space = int(linkArgs[0])
             return self.getAnswer(token, space)
-        #elif link == "solution":
-        #    return "\\begin{shaded}\n" + self.render(token.get("children")) + "\\end{shaded}\n"
         elif link == "solution":
             if linkArgs[0] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
-                    return self.beginSolution() + self.getHeading("Ratkaisu")
-                    #return "\\begin{shaded}\n" + self.getHeading("Ratkaisu") + "\n"
+                    return self.beginSolution()
                 else:
                     self.skip = True
                     return None
             elif linkArgs[0] == "end":
                 if self.options["mode"] == "solutions":
-                    return self.endSolution() #return "\\end{shaded}\n"
+                    return self.endSolution()
                 else:
                     self.skip = False
                     return None
