@@ -1,10 +1,17 @@
 import os
 from .renderer import md
 import importlib
+import pathlib
 
-def getExercises(exercises):
+def getExercises(exercises, inDir):
     if exercises != None:
         exercises = exercises.split(",")
+    else:
+        exercises = []
+        for filename in os.listdir(inDir):
+            if filename.endswith(".md"):
+                exercises.append(filename.rsplit(".", 1)[0])
+        exercises.sort()
     return exercises
 
 def execScript(function, scriptPath, seed):
@@ -20,10 +27,12 @@ def execScript(function, scriptPath, seed):
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
     if (inDir == None):
-        inDir = "examples"
-    assert os.path.exists(inDir)
+        inDir = os.path.join(pathlib.Path(__file__).parent.absolute(), "examples")
+    if not os.path.exists(inDir):
+        raise Exception("Input directory " + str(inDir) + " not found")
     content = []
-    exercises = getExercises(exercises)
+    exercises = getExercises(exercises, inDir)
+    print("Processing exercises", exercises, "from directory", inDir)
     for i in range(len(exercises)):
         exercise = exercises[i]
         print("-----", "Processing exercise", str(i+1) + "/" + str(len(exercises)), "'" + exercise + "'", "-----")
