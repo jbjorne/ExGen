@@ -28,4 +28,5 @@ setuptools.setup(
         'exgen/examples/features.py']), 
         ('exgen/templates', ['exgen/templates/template.tex'])],
     python_requires='>=3.6',
+    install_requires=["mistune>=2.0.0a4"]
 )
