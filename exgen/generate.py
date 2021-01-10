@@ -1,5 +1,8 @@
 import os
-import exgen.md as md
+if __name__=="__main__":
+    import renderer.md as md
+else:
+    from .renderer import md
 import importlib
 
 def getExercises(exercises):

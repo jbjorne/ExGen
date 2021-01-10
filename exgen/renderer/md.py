@@ -1,9 +1,11 @@
 import mistune
-import exgen.table as table
+from . import table
 import os
 import random
 import json
-from exgen.renderer import LatexRenderer, MoodleRenderer, ExamRenderer
+from .latexRenderer import LatexRenderer
+from .moodleRenderer import MoodleRenderer
+from .examRenderer import ExamRenderer
 
 RENDERERS = {"latex":LatexRenderer, "exam":ExamRenderer, "moodle":MoodleRenderer}
 
