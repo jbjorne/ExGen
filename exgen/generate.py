@@ -26,8 +26,9 @@ def execScript(function, scriptPath, seed):
     return data
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
-    if (inDir == None):
-        inDir = os.path.join(pathlib.Path(__file__).parent.absolute(), "examples")
+    fileDir = os.path.join(pathlib.Path(__file__).parent.absolute())
+    if inDir is None:
+        inDir = os.path.join(fileDir, "examples")
     if not os.path.exists(inDir):
         raise Exception("Input directory " + str(inDir) + " not found")
     content = []
@@ -45,7 +46,7 @@ def generate(inDir, exercises, outStem, outFormat, mode, seed):
     options["mode"] = mode
     options["format"] = outFormat
     options["answers"] = mode in ("answers", "solutions")
-    options["template"] = "templates/template.tex"
+    options["template"] = os.path.join(fileDir, "templates", "template.tex")
     options["fileStem"] = outStem
     md.renderDoc(content, options)
 
