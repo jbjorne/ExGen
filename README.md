@@ -29,3 +29,7 @@ Different output formats (such as Moodle) can be chosen with the format (-f) swi
 ## Randomizing exercises
 
 Exercise scripts take a seed value parameter, which can be used to initialize a random number generator. The seed value can be defined with the -s switch.
+
+## Advanced usage
+
+Writing a more complex exercises is demostrated in the included "features" example. In this exercise students of a machine learning course construct feature vectors from a dataset and calculate nearest neighbour distances between these vectors. The example demonstrates how to write complex, multi-stage exercises.

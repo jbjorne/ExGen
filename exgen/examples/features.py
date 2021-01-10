@@ -69,7 +69,7 @@ def calcDistances(persons, vectors, data, testCutoff):
 def makeData(seed):
     data = {}
     persons = []
-    rand = random.Random(seed if seed != None else 1)
+    rand = random.Random(seed)
     for i in range(6):
         person = OrderedDict()
         person["id"] = i + 1
@@ -91,7 +91,7 @@ def makeData(seed):
     data["persons"] = {"type":"table", "rows":rows, "headers":True}
     return data
 
-def features(seed=None):
+def features(seed=0):
     data = None
     while data is None:
         try:
