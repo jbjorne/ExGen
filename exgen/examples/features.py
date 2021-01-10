@@ -1,5 +1,3 @@
-import md
-import table
 import random
 import sys
 from collections import OrderedDict
@@ -21,14 +19,11 @@ cities = ["Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu", "Turku", "Jyv채skyl�
 def getCat(value, trueValue):
     return "0" if value != trueValue else "1"
 
-#def getCatReverse(value, trueValue):
-#    return "1" if value != trueValue else "0"
-
 def getCutoff(value, cutoff):
     return "0" if value <= cutoff else "1"
 
 def getClass(person):
-    value = person["ostotapahtumia"]
+    value = person["purchases"]
     if value < 5:
         return 0
     elif value < 10:
@@ -49,11 +44,11 @@ def calcVectors(persons, data):
     vectors = []
     for i in range(len(persons)):
         person = persons[i]
-        vector = getCat(person["sukupuoli"], "nainen")
-        vector += getCutoff(person["ik채"], 30)
-        vector += getCat(person["asuinpaikka"], "Helsinki")
-        vector += getCutoff(person["lapsia"], 0)
-        vector += getCat(person["siviilis채채ty"], "naimisissa")
+        vector = getCat(person["gender"], "female")
+        vector += getCutoff(person["age"], 30)
+        vector += getCat(person["residence"], "Helsinki")
+        vector += getCutoff(person["children"], 0)
+        vector += getCat(person["marital status"], "married")
         vectors.append(vector)
         data["vec" + str(i + 1)] = vector
     return vectors
@@ -78,20 +73,14 @@ def makeData(seed):
     for i in range(6):
         person = OrderedDict()
         person["id"] = i + 1
-        person["etunimi"] = None
-        person["sukunimi"] = rand.choice(surnames)
-        person["sukupuoli"] = rand.choice(["mies", "nainen"])
-        person["etunimi"] = rand.choice(maleNames) if person["sukupuoli"] == "mies" else rand.choice(femaleNames)
-        person["ik채"] = rand.randrange(25, 70)
-        person["asuinpaikka"] = rand.choice(cities)
-        person["lapsia"] = rand.randrange(0,4)
-        person["siviilis채채ty"] = rand.choice(["naimisissa", "naimaton"])
-        person["ostotapahtumia"] = rand.randrange(0,20)
-        # The test set classes should be included in the data, because the test set
-        # does not represent actually unknown examples, but rather the data used to
-        # evaluate system performance.
-        #if i >= 4:
-        #    person["ostotapahtumia"] = "-"
+        person["last name"] = rand.choice(surnames)
+        person["gender"] = rand.choice(["male", "female"])
+        person["first name"] = rand.choice(maleNames) if person["gender"] == "male" else rand.choice(femaleNames)
+        person["age"] = rand.randrange(25, 70)
+        person["residence"] = rand.choice(cities)
+        person["children"] = rand.randrange(0,4)
+        person["marital status"] = rand.choice(["married", "unmarried"])
+        person["purchases"] = rand.randrange(0,20)
         persons.append(person)
     vectors = calcVectors(persons, data)
     calcDistances(persons, vectors, data, 4)
@@ -99,7 +88,7 @@ def makeData(seed):
     rows.append([x for x in persons[0].keys()])
     for person in persons:
         rows.append([x for x in person.values()])
-    data["asiakkaat"] = table.Table(rows, headers=True)
+    data["persons"] = {"type":"table", "rows":rows, "headers":True}
     return data
 
 def features(seed=None):

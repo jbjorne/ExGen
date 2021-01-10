@@ -1,40 +1,42 @@
-Hilavitkutin Oy markkinoi uutta tuotettaan puhelinmyynnillä. Myyntityön nopeuttamiseksi puheluja soitetaan uusille asiakkaille, jotka muistuttavat aikaisemmin tuotteita ostaneita henkilöitä. Tällaiset henkilöt löydetään henkilötietokannasta lähimmän naapurin menetelmällä.
+# Feature Vectors
 
-Piirrevektori koostetaan järjestyksessä seuraavista kategorisista muuttujista:
+Widget Inc. is using telemarketing to sell its new product in Finland. The company has acquired a large list of potential customers, and to speed up the sales process, people who are similar to the company's existing customers are called first. To find potential customers most like existing ones, the potential customers are classified using a nearest neighbours classifier.
 
-* sukupuoli (0=mies, 1=nainen)
-* ikäryhmä (0 jos ikä on alle 30, muuten 1)
-* asuinpaikka (0=muu maa, 1=Helsinki)
-* lapsia (0=ei, 1=kyllä)
-* siviilisääty (0=naimaton, 1=naimisissa)
+The feature vector is constructed using the following categorical variables:
 
-Esimerkin luokka (0, 1 tai 2) määritellään siten, että luokka on 0, jos ostotapahtumia on korkeintaan 5, luokka on 1, jos ostotapahtumia on korkeintaan 10, ja muuten luokka on 2.
+* gender (0=male, 1=female)
+* age group (0 if under 30, otherwise 1)
+* residence (0=rest of the country, 1=Helsinki)
+* children (0=no, 1=yes)
+* marital status (0=unmarried, 1=married)
 
-[](asiakkaat)
+The class of the example (0, 1 or 2) is defined so that if the customer has made at most 5 purchases, the class is 0, if at most 10 purchases the class is 1 and otherwise the class is 2.
 
-Muodosta piirrevektorit asiakasaineistolle. Piirrevektori esitetään muodossa xxxxx, joten piirrevektori voisi siis olla esimerkiksi [00101](example).
+[](persons)
 
-* Piirrevektori 1: [vec1](answer)
-* Piirrevektori 2: [vec2](answer)
-* Piirrevektori 3: [vec3](answer)
-* Piirrevektori 4: [vec4](answer)
-* Piirrevektori 5: [vec5](answer)
-* Piirrevektori 6: [vec6](answer)
+Define the feature vectors for the persons dataset. A feature vector is defined as xxxxx, where each feature can be 0 or 1, for example [00101](example).
 
-Laske testiaineiston esimerkkien (henkilöt 5 ja 6) Manhattan-etäisyydet koulutusaineiston esimerkkeihin (henkilöt 1-4):
+* Feature vector 1: [vec1](answer)
+* Feature vector 2: [vec2](answer)
+* Feature vector 3: [vec3](answer)
+* Feature vector 4: [vec4](answer)
+* Feature vector 5: [vec5](answer)
+* Feature vector 6: [vec6](answer)
 
-* Etäisyys 1-5: [dist5-1](answer)
-* Etäisyys 2-5: [dist5-2](answer)
-* Etäisyys 3-5: [dist5-3](answer)
-* Etäisyys 4-5: [dist5-4](answer)
+Calculate the Manhattan distances between the test set (persons 5 and 6) and the training set (persons 1-4):
 
-* Etäisyys 1-6: [dist6-1](answer)
-* Etäisyys 2-6: [dist6-2](answer)
-* Etäisyys 3-6: [dist6-3](answer)
-* Etäisyys 4-6: [dist6-4](answer)
+* Distance 1-5: [dist5-1](answer)
+* Distance 2-5: [dist5-2](answer)
+* Distance 3-5: [dist5-3](answer)
+* Distance 4-5: [dist5-4](answer)
 
-Käyttäen lähimmän naapurin menetelmää, ennusta testiaineiston esimerkkien luokka:
+* Distance 1-6: [dist6-1](answer)
+* Distance 2-6: [dist6-2](answer)
+* Distance 3-6: [dist6-3](answer)
+* Distance 4-6: [dist6-4](answer)
 
-* Esimerkin 5 ennustettu luokka: [class5](answer)
-* Esimerkin 6 ennustettu luokka: [class6](answer)
+Using the nearest neighbours method, predict the class for the test set examples:
+
+* Predicted class for example 5: [class5](answer)
+* Predicted class for example 6: [class6](answer)
 

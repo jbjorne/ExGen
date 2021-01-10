@@ -158,6 +158,9 @@ class Renderer:
 
     def getData(self, key):
         item = self.data[key]
+        if isinstance(item, dict) and item.get("type") == "table":
+            item = {x:item[x] for x in item if x != "type"}
+            item = table.Table(**item)
         if isinstance(item, table.Table):
             return self.makeTable(item) #table.makeLatexTable(item["rows"], rowheaders=item.get("rowheaders"))
         else:
