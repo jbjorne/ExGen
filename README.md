@@ -20,7 +20,7 @@ exgen -e velocity -o /path/stem
 
 The -o switch defines the stem (filename without the extension) for the output files. Once you run the program, it generates a file /path/stem.tex. You can compile this file into PDF format by using e.g. the pdflatex command line program.
 
-To get an overview of the program options, run generate.py with the --help switch.
+To get an overview of the program options, run exgen with the --help switch.
 
 ## Output formats
 
