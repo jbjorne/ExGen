@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-import md
+import exgen.md as md
 
 class Answer():
     def __init__(self, content):

@@ -1,4 +1,4 @@
-import table
+import exgen.table as table
 import random
 import json
 

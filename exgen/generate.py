@@ -1,5 +1,5 @@
 import os
-import md
+import exgen.md as md
 import importlib
 
 def getExercises(exercises):
@@ -18,7 +18,9 @@ def execScript(function, scriptPath, seed):
         data = eval(function + "(" + str(seed) + ")", scriptGlobals)
     return data
 
-def generate(inDir, exercises, outStem, outFormat, mode, seed): 
+def generate(inDir, exercises, outStem, outFormat, mode, seed):
+    if (inDir == None):
+        inDir = "examples"
     assert os.path.exists(inDir)
     content = []
     exercises = getExercises(exercises)
