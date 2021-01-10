@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ET
-from . import md
 
 class Answer():
     def __init__(self, content):

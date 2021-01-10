@@ -1,8 +1,8 @@
-import exgen.renderer.rendererCls
+from .rendererCls import Renderer
 
-class MoodleRenderer(exgen.renderer.rendererCls.Renderer):
+class MoodleRenderer(Renderer):
     def __init__(self, data, options):
-        exgen.renderer.rendererCls.Renderer.__init__(self, data, options)
+        Renderer.__init__(self, data, options)
     
     def getHeading(self, content):
         heading = "h" + str(self.headingLevel)
