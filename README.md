@@ -32,4 +32,4 @@ Exercise scripts take a seed value parameter, which can be used to initialize a 
 
 ## Advanced usage
 
-Writing a more complex exercises is demostrated in the included "features" example. In this exercise students of a machine learning course construct feature vectors from a dataset and calculate nearest neighbour distances between these vectors. The example demonstrates how to write complex, multi-stage exercises.
+Writing a more complex exercise is demostrated in the included "features" example. In this exercise students of a machine learning course construct feature vectors from a dataset and calculate nearest neighbour distances between these vectors. The example demonstrates how to write complex, multi-stage exercises.
