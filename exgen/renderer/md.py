@@ -3,11 +3,15 @@ from . import table
 import os
 import random
 import json
-from .latexRenderer import LatexRenderer
-from .moodleRenderer import MoodleRenderer
-from .examRenderer import ExamRenderer
+from . import latexRenderer
+from . import moodleRenderer
+from . import examRenderer
 
-RENDERERS = {"latex":LatexRenderer, "exam":ExamRenderer, "moodle":MoodleRenderer}
+RENDERERS = {
+    "latex":latexRenderer.LatexRenderer, 
+    "exam":examRenderer.ExamRenderer, 
+    "moodle":moodleRenderer.MoodleRenderer
+}
 
 def parse(mdPath, data=None):
     markdown = mistune.create_markdown(renderer=mistune.AstRenderer())

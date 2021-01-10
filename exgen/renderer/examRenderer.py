@@ -1,8 +1,8 @@
-from .moodleRenderer import MoodleRenderer
+from . import moodleRenderer
 
-class ExamRenderer(MoodleRenderer):
+class ExamRenderer(moodleRenderer.MoodleRenderer):
     def __init__(self, data, options):
-        MoodleRenderer.__init__(self, data, options)
+        moodleRenderer.MoodleRenderer.__init__(self, data, options)
     
     def makeAnswer(self, items, space):
         assert len(items["options"]) == 1, items["options"]

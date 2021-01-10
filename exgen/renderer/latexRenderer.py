@@ -1,4 +1,4 @@
-from .renderer import Renderer
+from exgen.renderer import Renderer
 
 class LatexRenderer(Renderer):
     def __init__(self, data, options):

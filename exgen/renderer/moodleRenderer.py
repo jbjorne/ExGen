@@ -1,6 +1,6 @@
-from .renderer import Renderer
+from . import renderer
 
-class MoodleRenderer(Renderer):
+class MoodleRenderer(renderer.Renderer):
     def __init__(self, data, options):
         Renderer.__init__(self, data, options)
     
