@@ -19,5 +19,13 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    #include_package_data=True,
+    #package_data={'exgen': ['exgen/examples/*', 'exgen/template/*']},
+    data_files=[('exgen/examples', 
+        ['exgen/examples/velocity.md',
+        'exgen/examples/velocity.py',
+        'exgen/examples/features.md',
+        'exgen/examples/features.py']), 
+        ('exgen/templates', ['exgen/templates/template.tex'])],
     python_requires='>=3.6',
 )
