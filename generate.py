@@ -7,7 +7,7 @@ def getExercises(exercises):
         exercises = exercises.split(",")
     return exercises
 
-def execScript(function, scriptPath):
+def execScript(function, scriptPath, seed):
     data = None
     if os.path.exists(scriptPath):
         print("Running script", scriptPath)
@@ -15,11 +15,11 @@ def execScript(function, scriptPath):
             code = compile(f.read(), scriptPath, 'exec')
         scriptGlobals = {}
         exec(code, scriptGlobals)
-        data = eval(function + "()", scriptGlobals)
+        data = eval(function + "(" + str(seed) + ")", scriptGlobals)
     return data
 
-def generate(inDir, exercises, outStem, outFormat, mode):
-    assert os.path.isdir(inDir)
+def generate(inDir, exercises, outStem, outFormat, mode, seed): 
+    assert os.path.exists(inDir)
     content = []
     exercises = getExercises(exercises)
     for i in range(len(exercises)):
@@ -27,7 +27,7 @@ def generate(inDir, exercises, outStem, outFormat, mode):
         print("-----", "Processing exercise", str(i+1) + "/" + str(len(exercises)), "'" + exercise + "'", "-----")
         mdPath = os.path.join(inDir, exercise + ".py")
         print("Reading exercise from", mdPath)
-        data = execScript(exercise, mdPath)
+        data = execScript(exercise, mdPath, seed)
         content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
     options = {}
@@ -45,7 +45,8 @@ if __name__=="__main__":
     optparser.add_option("-e", "--exercises", default=None, help="Exercise names to include")
     optparser.add_option("-o", "--output", default=None, help="The output file stem")
     optparser.add_option("-f", "--format", default="latex")
+    optparser.add_option("-s", "--seed", default=0, type=int)
     optparser.add_option("-m", "--mode", default="solutions", help="'questions', 'answers' or 'solutions'")
     (options, args) = optparser.parse_args()
 
-    generate(options.input, options.exercises, options.output, options.format, options.mode)
+    generate(options.input, options.exercises, options.output, options.format, options.mode, options.seed)
