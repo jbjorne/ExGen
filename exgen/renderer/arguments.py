@@ -62,3 +62,30 @@ def nameArgs(args, kwargs, names):
         kwargs[name] = args[i] if i < len(args) else None
     args = args[len(names):]
     return args, kwargs
+
+def nameUnnamed(var, names):
+    nameArgs(var["unnamed"], var, names)
+
+def parseVar(valueText, typeText, definedVars):
+    unnamed, var = parseArgs(typeText, "type")
+    var["unnamed"] = unnamed
+    assert not "value" in var
+    value, valueDict = parseArgs(valueText)
+    # Convert 0 and 1 item lists into a single value
+    if len(value) == 0:
+        value = None
+    elif len(value) == 1:
+        value = value[0]
+    # If key:value pairs have been defined, define the entire value as a dictionary
+    if len(valueDict) > 0:
+        assert value == None
+        value = valueDict
+    # If the value is a known variable name, replace it with the known value
+    if definedVars != None and isinstance(value, str) and value in definedVars:
+        value = definedVars[value]
+    if isinstance(value, list): # Multiple choice question
+        assert len(valueDict) == 0
+        value = {"choices":value, "correct":value[0]}
+    # Add the value into the variable dictionary and return the whole variable
+    var["value"] = value
+    return var

@@ -47,34 +47,24 @@ class LatexRenderer(Renderer):
     def makeExample(self, token):
         return "\\textcolor{blue}{" + self.render(token.get("children")) + "}"
     
-    def makeAnswer(self, items, space):
-        if len(items["options"]) > 1:
-            listItems = [{"type":"list_item", "children":[{"type":"text", "text":x}]} for x in items["options"]]
+    def makeAnswer(self, var):
+        if isinstance(var["value"], dict): # Multiple choice
+            listItems = [{"type":"list_item", "children":[{"type":"text", "text":x}]} for x in var["value"]["choices"]]
             if self.options.get("answers") == True:
-                assert items["correct"] == listItems[0]["children"][0]["text"]
-                listItems[0]["children"][0]["text"] = "\\colorbox{gray!30}{" + str(items["correct"]) + "}"
+                assert var["value"]["correct"] == listItems[0]["children"][0]["text"]
+                listItems[0]["children"][0]["text"] = "\\colorbox{gray!30}{" + str(var["value"]["correct"]) + "}"
             self.rand.shuffle(listItems)
             return self.makeList(listItems)
-        else:
+        else: # Single value
             if self.options.get("answers") == True:
-                answer = str(items["correct"])
+                answer = str(var["value"])
                 span = "\\colorbox{gray!30}{%answer}"
             else:
-                #answer = "\\phantom{" + (space * "A ") + "}"
-                answer = space * "A "
+                answer = var.get("space", 5) * "A "
                 span = "\\colorbox{gray!30}{\\phantom{%answer}}"
             if len(answer) > 50:
                 answer = "\\parbox{\\textwidth}{" + answer + "}"
             return span.replace("%answer", answer)
-
-            # if self.options.get("answers") == True:
-            #     return "\\colorbox{gray!30}{\\parbox{\\textwidth}{" + str(items["correct"]) + "}}"
-            # else:
-            #     return "\\colorbox{gray!30}{\\parbox{\\textwidth}\\phantom{" + (space * "A ") + "}}"
-            #     #return "\\hlc[gray!30]{}"
-            #     #return "\\begin{mycolorbox}[colback=gray!30,hbox]" + (space * "A ") + "\\end{mycolorbox}"
-            #     #return "\\colorbox{gray!30}{\\phantom{" + (space * "A ") + "}}"
-            #     #return "\\begin{shaded}" + (space * "A ") +  "\\end{shaded}\n"
     
     def makeURL(self, token):
         return self.render(token.get("children")) + " (\\url{" + token["link"] + "})"

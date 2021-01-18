@@ -68,7 +68,7 @@ class Renderer:
                 elif tt == "paragraph":
                     span = self.makeParagraph(children)
                 elif tt == "link":
-                    span = self.insertData(token)
+                    span = self.processLink(token)
                 elif tt == "list":
                     span = self.makeList(children)
                 elif tt == "image":
@@ -81,35 +81,34 @@ class Renderer:
                     tex += span
         return tex
 
-    def insertData(self, token):
-        data = self.render(token.get("children"))
-        args, kwargs = arguments.parseArgs(token["link"], "type")
-        #print((data, args, kwargs))
-        if kwargs["type"] == "example":
+    def processLink(self, token):
+        var = arguments.parseVar(self.render(token.get("children")), token["link"], self.data)
+        print(var)
+        if var["type"] == "example":
             return self.makeExample(token)
-        elif kwargs["type"] == "answer":
-            args, kwargs = arguments.nameArgs(args, kwargs, ["space"])
-            kwargs["space"] = int(kwargs["space"]) if kwargs["space"] != None else 5
-            return self.getAnswer(token, kwargs["space"])
-        elif kwargs["type"] == "solution":
-            args, kwargs = arguments.nameArgs(args, kwargs, ["pos"])
-            if kwargs["pos"] == None:
-                kwargs["pos"] = "begin" if self.skip else "end"
-            if kwargs["pos"] == "begin":
+        elif var["type"] == "answer":
+            arguments.nameUnnamed(var, ["space"])
+            var["space"] = int(var["space"]) if var["space"] != None else 5
+            return self.makeAnswer(var)
+        elif var["type"] == "solution":
+            arguments.nameUnnamed(var, ["pos"])
+            if var["pos"] == None:
+                var["pos"] = "begin" if self.skip else "end"
+            if var["pos"] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
                     return self.beginSolution()
                 else:
                     self.skip = True
                     return None
-            elif kwargs["pos"] == "end":
+            elif var["pos"] == "end":
                 if self.options["mode"] == "solutions":
                     return self.endSolution()
                 else:
                     self.skip = False
                     return None
-        elif kwargs["type"] == None and data in self.data:
-            return self.getData(data)
+        elif var["type"] == None:
+            return self.insertVar(var)
         else:
             return self.makeURL(token)
     
@@ -119,45 +118,46 @@ class Renderer:
     def endSolution(self):
         raise NotImplementedError
 
-    def getAnswer(self, token, space):
-        if isinstance(token, table.Answer):
-            content = token.content
-        else:
-            assert token.get("link").startswith("answer")
-            children = token.get("children")
-            if len(children) == 1 and children[0]["type"] == "text" and children[0]["text"] in self.data:
-                content = children[0]["text"]
-            else:
-                content = self.render(children)
-        if content == None:
-            return ""
+    # def insertAnswer(self, var):
+    #     assert var["type"] == "answer"
+    #     if isinstance(var["value"], table.Answer):
+    #         content = var["value"]
+    #     else:
+    #         assert token.get("link").startswith("answer")
+    #         children = token.get("children")
+    #         if len(children) == 1 and children[0]["type"] == "text" and children[0]["text"] in self.data:
+    #             content = children[0]["text"]
+    #         else:
+    #             content = self.render(children)
+    #     if content == None:
+    #         return ""
  
-        items = None
-        if isinstance(content, str) and not isNumber(content):
-            try:
-                items = json.loads(content)
-                assert isinstance(items,dict), items
-            except ValueError as e:
-                items = None
-        if items is None:
-            items = {}
-            items["options"] = content.split(";") if isinstance(content, str) and ";" in content else [content]
-        if len(items["options"]) > len(set(items["options"])):
-            raise Exception("Answer values not unique in " + str(items))
+    #     items = None
+    #     if isinstance(content, str) and not isNumber(content):
+    #         try:
+    #             items = json.loads(content)
+    #             assert isinstance(items,dict), items
+    #         except ValueError as e:
+    #             items = None
+    #     if items is None:
+    #         items = {}
+    #         items["options"] = content.split(";") if isinstance(content, str) and ";" in content else [content]
+    #     if len(items["options"]) > len(set(items["options"])):
+    #         raise Exception("Answer values not unique in " + str(items))
         
-        for i in range(len(items["options"])):
-            if items["options"][i] in self.data:
-                items["options"][i] = self.getData(items["options"][i])
-        if "correct" not in items:
-            items["correct"] = items["options"][0]
-        assert items["correct"] in items["options"]
+    #     for i in range(len(items["options"])):
+    #         if items["options"][i] in self.data:
+    #             items["options"][i] = self.getData(items["options"][i])
+    #     if "correct" not in items:
+    #         items["correct"] = items["options"][0]
+    #     assert items["correct"] in items["options"]
 
-        items["options"] = [str(x) for x in items["options"]]
-        items["correct"] = str(items["correct"])
-        return self.makeAnswer(items, space)
+    #     items["options"] = [str(x) for x in items["options"]]
+    #     items["correct"] = str(items["correct"])
+    #     return self.makeAnswer(items, space)
 
-    def getData(self, key):
-        item = self.data[key]
+    def insertVar(self, var):
+        item = var["value"]
         if isinstance(item, dict) and item.get("type") == "table":
             item = {x:item[x] for x in item if x != "type"}
             item = table.Table(**item)
