@@ -1,7 +1,7 @@
 from . import table
 import random
 import json
-import re
+from csv import reader
 
 def isNumber(s):
     try:
@@ -13,8 +13,8 @@ def isNumber(s):
 def parseArgsList(text):
     args = []
     kwargs = {}
-    parts = re.split(r',(?=")', text)
-    print("PARTS", text, parts)
+    parts = [x for x in reader([text], skipinitialspace=True)][0]
+    #print("PARTS", text, parts)
     for part in parts:
         name = None
         arg = part
@@ -146,7 +146,7 @@ class Renderer:
     def insertData(self, token):
         data = self.render(token.get("children"))
         args, kwargs = parseArgs(token["link"], "type")
-        print(data, args, kwargs)
+        #print((data, args, kwargs))
         if kwargs["type"] == "example":
             return self.makeExample(token)
         elif kwargs["type"] == "answer":
@@ -157,14 +157,14 @@ class Renderer:
             args, kwargs = nameArgs(args, kwargs, ["pos"])
             if kwargs["pos"] == None:
                 kwargs["pos"] = "begin" if self.skip else "end"
-            if args["pos"] == "begin":
+            if kwargs["pos"] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
                     return self.beginSolution()
                 else:
                     self.skip = True
                     return None
-            elif args["pos"] == "end":
+            elif kwargs["pos"] == "end":
                 if self.options["mode"] == "solutions":
                     return self.endSolution()
                 else:
