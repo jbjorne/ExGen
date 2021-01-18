@@ -1,6 +1,7 @@
 from . import table
 import random
 import json
+import ast
 
 def isNumber(s):
     try:
@@ -12,29 +13,58 @@ def isNumber(s):
 def collectArgs(*args, **kwargs):
     return {k:v for k,v in locals().items()}
 
-def parseArgs(text, argNames):
-    args = None
-    if text == None and text.strip() != "":
-        args = {argNames[0]: None}
-    else:
+def parseFuncArgs(args):
+    args = 'f({})'.format(args)
+    tree = ast.parse(args)
+    funccall = tree.body[0].value
+
+    args = [ast.literal_eval(arg) for arg in funccall.args]
+    kwargs = {arg.arg: ast.literal_eval(arg.value) for arg in funccall.keywords}
+    return args, kwargs
+
+def parseArgs(text, mainArgName=None):
+    args = []
+    kwargs = []
+    if text != None and text.strip() != "":
         try: # Try to parse the argument as a single number
             f = float(data)
             i = int(data)
-            args = {argNames[0]: i if i == f else f}
+            args = [i if i == f else f]
         except:
             try: # Try to parse the argument as Python function arguments
-                evalLocals = {}
-                exec("def collect(" + " ".join([x + "," for x in argNames]) + ", *args, **kwargs): return {k:v for k,v in locals().items()}", globals, evalLocals)
-                args = eval("collect(" + text + ")", globals, evalLocals)
+                args, kwargs = parseFuncArgs(text)
             except:
-                if "[" in text or "{" in text: # Try to parse the argument as a JSON object
+                if text.startswith("[") or text.startswith("{"): # Try to parse the argument as a JSON object
+                    jsonObj = None
                     try:
-                        args = json.loads(text)
+                        jsonObj = json.loads(text)
+                        if isinstance(jsonObj, list):
+                            args = jsonObj
+                        elif isinstance(jsonObj, dict):
+                            kwargs = jsonObj
+                        else:
+                            jsonObj = "error"
                     except:
                         pass
-    if args == None: # Treat the argument as a single string
-        args = {argNames[0]: text}
-    return args
+                    if jsonObj == "error":
+                        raise Exception("JSON parsing error")
+        if args == []: # Treat the argument as a single string
+            args = [text]
+    if mainArgName != None and not mainArgName in kwargs:
+        kwargs[mainArgName] = None
+        #if len(args) == 0:
+        #    raise Exception("Argument '" + mainArgName + "' not defined")
+        if len(args) > 1:
+            kwargs[mainArgName] = args[0]
+            args = args[1:]
+    return args, kwargs
+
+def nameArgs(args, kwargs, names):
+    for name, value in zip(names, args):
+        if name in kwargs:
+            raise Exception("Multiple values for argument '" + name + "'")
+        kwargs[name] = value
+    return kwargs
 
 class Renderer:
     def __init__(self, data, options, seed=1):
@@ -109,15 +139,15 @@ class Renderer:
 
     def insertData(self, token):
         data = self.render(token.get("children"))
-        args = parseArgs(token["link"], {"type":["pos"], })
-        if args["type"] == "example":
+        args, kwargs = parseArgs(token["link"], "type")
+        if kwargs["type"] == "example":
             return self.makeExample(token)
-        elif args["type"] == "answer":
-            space = 5
-            if len(dataTypeArgs) > 0:
-                space = int(dataTypeArgs[0])
-            return self.getAnswer(token, space)
-        elif args["type"] == "solution":
+        elif kwargs["type"] == "answer":
+            kwargs = nameArgs(args, kwargs, ["space"])
+            kwargs["space"] = int(kwargs["space"]) if "space" in kwargs else 5
+            return self.getAnswer(token, kwargs["space"])
+        elif kwargs["type"] == "solution":
+            kwargs = nameArgs(args, kwargs, ["pos"])
             if args["pos"] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
@@ -131,7 +161,7 @@ class Renderer:
                 else:
                     self.skip = False
                     return None
-        elif args["type"] == None and data in self.data:
+        elif kwargs["type"] == None and data in self.data:
             return self.getData(data)
         else:
             return self.makeURL(token)
