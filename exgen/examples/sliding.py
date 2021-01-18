@@ -109,17 +109,17 @@ def shuffle(state, numSteps, rand):
         for move in moves:
             seen.add(str(move))
         if len(moves) > 0:
-            state = random.sample(moves, 1)[0]
+            state = rand.sample(moves, 1)[0]
             unused.extend(moves)
         else:
-            state = random.sample(unused, 1)[0]
+            state = rand.sample(unused, 1)[0]
     return state
 
 # Question Generation #########################################################
 
 def sliding(options):
     heuristic = "OOP"
-    numSteps = 3
+    numSteps = 2
     seed = options["seed"]
     assert heuristic in HEURISTICS
     data = {"heuristic":HEURISTICS[heuristic]["desc"]}
