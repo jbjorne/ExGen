@@ -60,7 +60,7 @@ def main():
     optparser.add_option("-e", "--exercises", default=None, help="Exercise names to include. If not given all exercises from the directory are included.")
     optparser.add_option("-o", "--output", default=None, help="The output file stem (output file without the extension)")
     optparser.add_option("-f", "--format", default="latex", help="One of 'latex', 'moodle' or 'exam'")
-    optparser.add_option("-s", "--seed", default=0, type=int, help="Random number generator seed for randomizing the exercises")
+    optparser.add_option("-s", "--seed", default=1, type=int, help="Random number generator seed for randomizing the exercises")
     optparser.add_option("-m", "--mode", default="solutions", help="One of 'questions', 'answers' or 'solutions'")
     (options, args) = optparser.parse_args()
 

@@ -5,16 +5,10 @@ from collections import OrderedDict
 class ValidationError(Exception):
     pass
 
-surnames = [
-    "Korhonen", "Virtanen", "Mäkinen", "Nieminen", "Mäkelä", "Hämäläinen",
-    "Laine", "Heikkinen", "Koskinen", "Järvinen"]
-
-maleNames = ["Juha", "Timo", "Matti", "Kari", "Mikko", "Jari", "Antti", "Jukka", "Mika", "Markku"]
-
-femaleNames = ["Tuula", "Anne", "Päivi", "Anna", "Ritva", "Leena", "Pirjo", "Sari", "Minna", "Marja"]
-
-cities = ["Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu", "Turku", "Jyväskylä",
-    "Lahti", "Kuopio", "Pori", "Kouvola"]
+surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor", "Robinson", "Thompson"]
+maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar"]
+femaleNames = ["Olivia", "Lily", "Sophia", "Emily", "Chloe", "Grace", "Alice", "Sarah"]
+cities = ["London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Liverpool", "Newcastle"]
 
 def getCat(value, trueValue, reverse=False):
     value = "0" if value != trueValue else "1"
@@ -43,7 +37,7 @@ def calcVectors(persons, data):
         person = persons[i]
         vector = getCat(person["gender"], "female")
         vector += getCutoff(person["age"], 50)
-        vector += getCat(person["residence"], "Helsinki", True)
+        vector += getCat(person["city"], "London", True)
         vector += getCutoff(person["children"], 0)
         vector += getCat(person["married"], "yes")
         vectors.append(vector)
@@ -51,6 +45,7 @@ def calcVectors(persons, data):
     return vectors
 
 def calcDistances(persons, vectors, data, testCutoff):
+    classes = set()
     for i in range(testCutoff, len(vectors)):
         distances = []
         for j in range(0, testCutoff):
@@ -61,7 +56,11 @@ def calcDistances(persons, vectors, data, testCutoff):
         nearest = distances[0]
         if distances[1][0] == nearest[0]:
             raise ValidationError("Multiple nearest neighbours")
-        data["class" + str(i+1)] = getClass(persons[nearest[1]])
+        classValue = getClass(persons[nearest[1]])
+        classes.add(classValue)
+        data["class" + str(i+1)] = classValue
+    if len(classes) == 1:
+        raise ValidationError("Test set examples are of the same class")
 
 def makeData(seed):
     data = {}
@@ -74,7 +73,7 @@ def makeData(seed):
         person["gender"] = rand.choice(["male", "female"])
         person["first name"] = rand.choice(maleNames) if person["gender"] == "male" else rand.choice(femaleNames)
         person["age"] = rand.randrange(20, 70)
-        person["residence"] = rand.choice(cities)
+        person["city"] = rand.choice(["London", rand.choice(cities)])
         person["children"] = rand.randrange(0,4)
         person["married"] = rand.choice(["yes", "no"])
         person["sales"] = 0 if i % 2 == 0 else rand.randrange(100, 900, 20)
@@ -98,5 +97,5 @@ def features(options):
             data["variant"] = "#" + str(seed)
         except ValidationError as e:
             print(e)
-            seed = random.Random(seed).randrange(0, 9999999999999999)
+            seed = random.Random(seed).randrange(0, 1000000)
     return data
