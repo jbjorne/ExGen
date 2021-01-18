@@ -3,9 +3,9 @@ from . import table
 import os
 import random
 import json
-from . import latexRenderer
-from . import moodleRenderer
-from . import examRenderer
+from .renderer import latexRenderer
+from .renderer import moodleRenderer
+from .renderer import examRenderer
 
 RENDERERS = {
     "latex":latexRenderer.LatexRenderer, 

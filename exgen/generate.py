@@ -1,5 +1,5 @@
 import os
-from .renderer import md
+from .src import md
 import importlib
 import pathlib
 

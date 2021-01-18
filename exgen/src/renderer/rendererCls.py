@@ -1,7 +1,7 @@
-from . import table
+from .. import table
 import random
 import json
-from . import arguments
+from .. import arguments
 
 def isNumber(s):
     try:
