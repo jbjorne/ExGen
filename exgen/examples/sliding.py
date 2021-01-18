@@ -72,6 +72,7 @@ def build(initial, numLevels, getHeuristic):
     root = {"index":0, "state":initial, "parent":None, "children":[], "heuristic":getHeuristic(initial, positions), "level":0}
     graph = {}
     graph["source"] = "digraph G {\n"
+    graph["source"] += "forcelabels=true;\n"
     graph["source"] += "concentrate=True;\n"
     graph["source"] += "rankdir=TB;\n"
     graph["source"] += "node [shape=record];\n"
@@ -87,8 +88,8 @@ def addNodes(current, maxLevel, visited, graph, getHeuristic):
             if str(state) not in visited:
                 positions = getPositions(len(state), len(state[0]))
                 heuristic = getHeuristic(state, positions)
-                node = {"index":len(visited), "state":state, "parent":current, "children":[], "heuristic":heuristic, "level":current["level"] + 1}
                 visited.add(str(state))
+                node = {"index":len(visited), "state":state, "parent":current, "children":[], "heuristic":heuristic, "level":current["level"] + 1}
                 current["children"].append(node)
         for node in current["children"]:
             graph["source"] += nodeToString(node)
@@ -96,8 +97,9 @@ def addNodes(current, maxLevel, visited, graph, getHeuristic):
             addNodes(node, maxLevel, visited, graph, getHeuristic)
 
 def nodeToString(node):
-    label = "|".join(["{" + "|".join([str(x) for x in row]) + "}" for row in node["state"]])
-    return "N" + str(node["index"]) + " [label=\"" + label + "\"];\n"
+    label = "{" + "|".join(["{" + "|".join([str(x) if x != 0 else "_" for x in row]) + "}" for row in node["state"]]) + "}"
+    name = "N" + str(node["index"])
+    return name + " [label=\"" + label + "\"" + "xlabel=\"" + name + "\"];\n"
 
 def shuffle(state, numSteps, rand):
     seen = set()
