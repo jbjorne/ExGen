@@ -9,6 +9,33 @@ def isNumber(s):
     except ValueError:
         return False
 
+def collectArgs(*args, **kwargs):
+    return {k:v for k,v in locals().items()}
+
+def parseArgs(text, argNames):
+    args = None
+    if text == None and text.strip() != "":
+        args = {argNames[0]: None}
+    else:
+        try: # Try to parse the argument as a single number
+            f = float(data)
+            i = int(data)
+            args = {argNames[0]: i if i == f else f}
+        except:
+            try: # Try to parse the argument as Python function arguments
+                evalLocals = {}
+                exec("def collect(" + " ".join([x + "," for x in argNames]) + ", *args, **kwargs): return {k:v for k,v in locals().items()}", globals, evalLocals)
+                args = eval("collect(" + text + ")", globals, evalLocals)
+            except:
+                if "[" in text or "{" in text: # Try to parse the argument as a JSON object
+                    try:
+                        args = json.loads(text)
+                    except:
+                        pass
+    if args == None: # Treat the argument as a single string
+        args = {argNames[0]: text}
+    return args
+
 class Renderer:
     def __init__(self, data, options, seed=1):
         self.data = data
@@ -82,40 +109,29 @@ class Renderer:
 
     def insertData(self, token):
         data = self.render(token.get("children"))
-        dataType = token["link"]
-        print((data, dataType))
-        parts = dataType.split(":", 1)
-        dataType = parts[0]
-        dataTypeArgs = []
-        if len(parts) > 1:
-            dataTypeArgs = parts[1:]
-        if dataType != None:
-            dataType = dataType.strip()
-        if dataType == "":
-            dataType = None
-        
-        if dataType == "example":
+        args = parseArgs(token["link"], {"type":["pos"], })
+        if args["type"] == "example":
             return self.makeExample(token)
-        elif dataType == "answer":
+        elif args["type"] == "answer":
             space = 5
             if len(dataTypeArgs) > 0:
                 space = int(dataTypeArgs[0])
             return self.getAnswer(token, space)
-        elif dataType == "solution":
-            if dataTypeArgs[0] == "begin":
+        elif args["type"] == "solution":
+            if args["pos"] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
                     return self.beginSolution()
                 else:
                     self.skip = True
                     return None
-            elif dataTypeArgs[0] == "end":
+            elif args["pos"] == "end":
                 if self.options["mode"] == "solutions":
                     return self.endSolution()
                 else:
                     self.skip = False
                     return None
-        elif data in self.data:
+        elif args["type"] == None and data in self.data:
             return self.getData(data)
         else:
             return self.makeURL(token)
