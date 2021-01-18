@@ -16,20 +16,17 @@ femaleNames = ["Tuula", "Anne", "Päivi", "Anna", "Ritva", "Leena", "Pirjo", "Sa
 cities = ["Helsinki", "Espoo", "Tampere", "Vantaa", "Oulu", "Turku", "Jyväskylä",
     "Lahti", "Kuopio", "Pori", "Kouvola"]
 
-def getCat(value, trueValue):
-    return "0" if value != trueValue else "1"
+def getCat(value, trueValue, reverse=False):
+    value = "0" if value != trueValue else "1"
+    if reverse:
+        value = "0" if value == "1" else "0"
+    return value
 
 def getCutoff(value, cutoff):
     return "0" if value <= cutoff else "1"
 
 def getClass(person):
-    value = person["purchases"]
-    if value < 5:
-        return 0
-    elif value < 10:
-        return 1
-    else:
-        return 2
+    return 1 if person["sales"] > 0 else -1
 
 def manhattan(a, b):
     value = 0
@@ -45,10 +42,10 @@ def calcVectors(persons, data):
     for i in range(len(persons)):
         person = persons[i]
         vector = getCat(person["gender"], "female")
-        vector += getCutoff(person["age"], 30)
-        vector += getCat(person["residence"], "Helsinki")
+        vector += getCutoff(person["age"], 50)
+        vector += getCat(person["residence"], "Helsinki", True)
         vector += getCutoff(person["children"], 0)
-        vector += getCat(person["marital status"], "married")
+        vector += getCat(person["married"], "yes")
         vectors.append(vector)
         data["vec" + str(i + 1)] = vector
     return vectors
@@ -76,11 +73,12 @@ def makeData(seed):
         person["last name"] = rand.choice(surnames)
         person["gender"] = rand.choice(["male", "female"])
         person["first name"] = rand.choice(maleNames) if person["gender"] == "male" else rand.choice(femaleNames)
-        person["age"] = rand.randrange(25, 70)
+        person["age"] = rand.randrange(20, 70)
         person["residence"] = rand.choice(cities)
         person["children"] = rand.randrange(0,4)
-        person["marital status"] = rand.choice(["married", "unmarried"])
-        person["purchases"] = rand.randrange(0,20)
+        person["married"] = rand.choice(["yes", "no"])
+        person["sales"] = 0 if i % 2 == 0 else rand.randrange(100, 900, 20)
+        person["called"] = "true" if i < 4 else "false"
         persons.append(person)
     vectors = calcVectors(persons, data)
     calcDistances(persons, vectors, data, 4)
