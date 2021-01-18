@@ -118,44 +118,6 @@ class Renderer:
     def endSolution(self):
         raise NotImplementedError
 
-    # def insertAnswer(self, var):
-    #     assert var["type"] == "answer"
-    #     if isinstance(var["value"], table.Answer):
-    #         content = var["value"]
-    #     else:
-    #         assert token.get("link").startswith("answer")
-    #         children = token.get("children")
-    #         if len(children) == 1 and children[0]["type"] == "text" and children[0]["text"] in self.data:
-    #             content = children[0]["text"]
-    #         else:
-    #             content = self.render(children)
-    #     if content == None:
-    #         return ""
- 
-    #     items = None
-    #     if isinstance(content, str) and not isNumber(content):
-    #         try:
-    #             items = json.loads(content)
-    #             assert isinstance(items,dict), items
-    #         except ValueError as e:
-    #             items = None
-    #     if items is None:
-    #         items = {}
-    #         items["options"] = content.split(";") if isinstance(content, str) and ";" in content else [content]
-    #     if len(items["options"]) > len(set(items["options"])):
-    #         raise Exception("Answer values not unique in " + str(items))
-        
-    #     for i in range(len(items["options"])):
-    #         if items["options"][i] in self.data:
-    #             items["options"][i] = self.getData(items["options"][i])
-    #     if "correct" not in items:
-    #         items["correct"] = items["options"][0]
-    #     assert items["correct"] in items["options"]
-
-    #     items["options"] = [str(x) for x in items["options"]]
-    #     items["correct"] = str(items["correct"])
-    #     return self.makeAnswer(items, space)
-
     def insertVar(self, var):
         item = var["value"]
         if isinstance(item, dict) and item.get("type") == "table":

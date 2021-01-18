@@ -4,10 +4,10 @@ class ExamRenderer(MoodleRenderer):
     def __init__(self, data, options):
         MoodleRenderer.__init__(self, data, options)
     
-    def makeAnswer(self, items, space):
-        assert len(items["options"]) == 1, items["options"]
-        answer = items["options"][0]
-
+    def makeAnswer(self, var):
+        if isinstance(var["value"], dict):
+            raise Exception("EXAM does not support importing multiple choice questions")
+        answer = var["value"]
         #template = """<span case-sensitive="%case" class="marker" cloze="true" id="%id" numeric="%numeric" precision="0" style="border:1px solid">%answer</span>"""
         #template = template.replace("%case", "false")
         #template = template.replace("%id", "$111")

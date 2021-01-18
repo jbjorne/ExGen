@@ -41,18 +41,21 @@ class MoodleRenderer(Renderer):
         text += self.render(token.get("children")) + "</span>"
         return text
     
-    def makeAnswer(self, items, space=10):
-        if len(items["options"]) == 1:
-            return "{1:SA:=" + str(items["correct"]) + "}"
-        else:
-            for i in range(len(items["options"])):
-                item = items["options"][i]
+    def makeAnswer(self, var):
+        if isinstance(var["value"], dict):
+            value = var["value"]
+            items = []
+            for i in range(len(value["choices"])):
+                item = value["choices"][i]
                 assert not item.startswith("=")
-                if item == items["correct"]:
-                    items["options"][i] = "=" + items["options"][i]
-            if not items.get("ordered"):
-                self.rand.shuffle(items["options"])
-            return "{1:MC:" + "~".join(items["options"]) + "}"
+                if item == value["correct"]:
+                    item = "=" + str(item)
+                items.append(str(item))
+            if not value.get("ordered"):
+                self.rand.shuffle(items)
+            return "{1:MC:" + "~".join(items) + "}"
+        else:
+            return "{1:SA:=" + str(var["value"]) + "}"
     
     def makeURL(self, token):
         return "<a href=\"" + token["link"] + "\">" + self.render(token.get("children")) + "</a>"
