@@ -91,8 +91,9 @@ def makeData(seed):
     data["persons"] = {"type":"table", "rows":rows, "headers":True}
     return data
 
-def features(seed=0):
+def features(options):
     data = None
+    seed = options["seed"]
     while data is None:
         try:
             data = makeData(seed)

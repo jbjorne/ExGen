@@ -1,6 +1,7 @@
 import copy
 import random
 import sys
+import os
 
 # Heuristics ##################################################################
 
@@ -78,7 +79,7 @@ def build(initial, numLevels, getHeuristic):
     addNodes(root, numLevels, set(), graph, getHeuristic)
     graph["source"] += "}"
     print(graph)
-    return root
+    return root, graph
 
 def addNodes(current, maxLevel, visited, graph, getHeuristic):
     if current["level"] < maxLevel:
@@ -96,7 +97,7 @@ def addNodes(current, maxLevel, visited, graph, getHeuristic):
 
 def nodeToString(node):
     label = "|".join(["{" + "|".join([str(x) for x in row]) + "}" for row in node["state"]])
-    return "N" + str(node["index"]) + " [label=" + label + ";\n"
+    return "N" + str(node["index"]) + " [label=\"" + label + "\"];\n"
 
 def shuffle(state, numSteps, rand):
     seen = set()
@@ -114,9 +115,17 @@ def shuffle(state, numSteps, rand):
 
 # Question Generation #########################################################
 
-def sliding(seed=0, numSteps=3, heuristic="OOP"):
+def sliding(options):
+    heuristic = "OOP"
+    numSteps = 3
+    seed = options["seed"]
     assert heuristic in HEURISTICS
     data = {"heuristic":HEURISTICS[heuristic]["desc"]}
     initial = shuffle([[1, 2, 3], [4, 5, 6], [7, 8, 0]], numSteps, random.Random(seed))
-    build(initial, numSteps, HEURISTICS[heuristic]["func"])
+    root, graph = build(initial, numSteps, HEURISTICS[heuristic]["func"])
+    with open(options["fileStem"] + "Tree.dot", "wt") as f:
+        f.write(graph["source"])
+    cmd = "dot -Tpng " + options["fileStem"] + "Tree.dot" + " -o " + options["fileStem"] + "Tree.png"
+    print("Running", cmd)
+    os.system(cmd)
     return data

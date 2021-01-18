@@ -14,7 +14,7 @@ def getExercises(exercises, inDir):
         exercises.sort()
     return exercises
 
-def execScript(function, scriptPath, seed):
+def execScript(function, scriptPath, options):
     data = None
     if os.path.exists(scriptPath):
         print("Running script", scriptPath)
@@ -22,11 +22,20 @@ def execScript(function, scriptPath, seed):
             code = compile(f.read(), scriptPath, 'exec')
         scriptGlobals = {}
         exec(code, scriptGlobals)
-        data = eval(function + "(" + str(seed) + ")", scriptGlobals)
+        #data = eval(function + "(" + str(seed) + ")", scriptGlobals)
+        data = scriptGlobals[function](options)
     return data
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
     fileDir = os.path.join(pathlib.Path(__file__).parent.absolute())
+    options = {}
+    options["mode"] = mode
+    options["format"] = outFormat
+    options["answers"] = mode in ("answers", "solutions")
+    options["template"] = os.path.join(fileDir, "templates", "template.tex")
+    options["fileStem"] = outStem
+    options["seed"] = seed
+
     if inDir is None:
         inDir = os.path.join(fileDir, "examples")
     if not os.path.exists(inDir):
@@ -39,15 +48,9 @@ def generate(inDir, exercises, outStem, outFormat, mode, seed):
         print("-----", "Processing exercise", str(i+1) + "/" + str(len(exercises)), "'" + exercise + "'", "-----")
         mdPath = os.path.join(inDir, exercise + ".py")
         print("Reading exercise from", mdPath)
-        data = execScript(exercise, mdPath, seed)
+        data = execScript(exercise, mdPath, options)
         content.append(md.parse(os.path.join(inDir, exercise + ".md"), data))
     
-    options = {}
-    options["mode"] = mode
-    options["format"] = outFormat
-    options["answers"] = mode in ("answers", "solutions")
-    options["template"] = os.path.join(fileDir, "templates", "template.tex")
-    options["fileStem"] = outStem
     md.renderDoc(content, options)
 
 def main():
