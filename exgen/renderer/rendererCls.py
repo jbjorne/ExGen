@@ -81,35 +81,42 @@ class Renderer:
         return tex
 
     def insertData(self, token):
-        link = token["link"]
-        parts = link.split(":", 1)
-        link = parts[0]
-        linkArgs = []
+        data = self.render(token.get("children"))
+        dataType = token["link"]
+        print((data, dataType))
+        parts = dataType.split(":", 1)
+        dataType = parts[0]
+        dataTypeArgs = []
         if len(parts) > 1:
-            linkArgs = parts[1:]
-        if link == "example":
+            dataTypeArgs = parts[1:]
+        if dataType != None:
+            dataType = dataType.strip()
+        if dataType == "":
+            dataType = None
+        
+        if dataType == "example":
             return self.makeExample(token)
-        elif link == "answer":
+        elif dataType == "answer":
             space = 5
-            if len(linkArgs) > 0:
-                space = int(linkArgs[0])
+            if len(dataTypeArgs) > 0:
+                space = int(dataTypeArgs[0])
             return self.getAnswer(token, space)
-        elif link == "solution":
-            if linkArgs[0] == "begin":
+        elif dataType == "solution":
+            if dataTypeArgs[0] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
                     return self.beginSolution()
                 else:
                     self.skip = True
                     return None
-            elif linkArgs[0] == "end":
+            elif dataTypeArgs[0] == "end":
                 if self.options["mode"] == "solutions":
                     return self.endSolution()
                 else:
                     self.skip = False
                     return None
-        elif link in self.data:
-            return self.getData(link)
+        elif data in self.data:
+            return self.getData(data)
         else:
             return self.makeURL(token)
     

@@ -12,7 +12,7 @@ The feature vector is constructed using the following categorical variables:
 
 The class of the example (0, 1 or 2) is defined so that if the customer has made at most 5 purchases, the class is 0, if at most 10 purchases the class is 1 and otherwise the class is 2.
 
-[](persons)
+[persons]()
 
 Define the feature vectors for the persons dataset. A feature vector is defined as xxxxx, where each feature can be 0 or 1, for example [00101](example).
 
