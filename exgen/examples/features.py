@@ -6,8 +6,8 @@ class ValidationError(Exception):
     pass
 
 surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor", "Robinson", "Thompson"]
-maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar"]
-femaleNames = ["Olivia", "Lily", "Sophia", "Emily", "Chloe", "Grace", "Alice", "Sarah"]
+maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar", "Charlie", "Daniel", "Joshua"]
+femaleNames = ["Olivia", "Lily", "Sophia", "Emily", "Chloe", "Grace", "Alice", "Sarah", "Emma", "Lucy", "Maya", "Ella"]
 cities = ["London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Liverpool", "Newcastle"]
 
 def getCat(value, trueValue, reverse=False):
@@ -46,6 +46,7 @@ def calcVectors(persons, data):
 
 def calcDistances(persons, vectors, data, testCutoff):
     classes = set()
+    numCorrect = 0
     for i in range(testCutoff, len(vectors)):
         distances = []
         for j in range(0, testCutoff):
@@ -56,11 +57,15 @@ def calcDistances(persons, vectors, data, testCutoff):
         nearest = distances[0]
         if distances[1][0] == nearest[0]:
             raise ValidationError("Multiple nearest neighbours")
-        classValue = getClass(persons[nearest[1]])
-        classes.add(classValue)
-        data["class" + str(i+1)] = classValue
+        predictedClass = getClass(persons[nearest[1]])
+        classes.add(predictedClass)
+        if predictedClass == getClass(persons[i]):
+            numCorrect += 1
+        data["class" + str(i+1)] = predictedClass
     if len(classes) == 1:
         raise ValidationError("Test set examples are of the same class")
+    if numCorrect == 0:
+        raise ValidationError("Both predictions incorrect")
 
 def makeData(seed):
     data = {}
@@ -69,9 +74,10 @@ def makeData(seed):
     for i in range(6):
         person = OrderedDict()
         person["id"] = i + 1
+        gender = rand.choice(["male", "female"])
+        person["first name"] = rand.choice(maleNames) if gender == "male" else rand.choice(femaleNames)
         person["last name"] = rand.choice(surnames)
-        person["gender"] = rand.choice(["male", "female"])
-        person["first name"] = rand.choice(maleNames) if person["gender"] == "male" else rand.choice(femaleNames)
+        person["gender"] = gender
         person["age"] = rand.randrange(20, 70)
         person["city"] = rand.choice(["London", rand.choice(cities)])
         person["children"] = rand.randrange(0,4)
@@ -91,11 +97,12 @@ def makeData(seed):
 def features(options):
     data = None
     seed = options["seed"]
+    seedRand = random.Random(seed)
     while data is None:
         try:
             data = makeData(seed)
             data["variant"] = "#" + str(seed)
         except ValidationError as e:
-            print(e)
-            seed = random.Random(seed).randrange(0, 1000000)
+            #print(e)
+            seed = seedRand.randrange(0, 1000000000)
     return data
