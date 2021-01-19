@@ -28,12 +28,20 @@ def execScript(function, scriptPath, options):
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
     fileDir = os.path.join(pathlib.Path(__file__).parent.absolute())
+    outDir = None
+    if outStem != None:
+        outDir = os.path.dirname(outStem)
+        if not os.path.exists(outDir):
+            print("Making output directory", outDir)
+            os.makedirs(outDir)
+
     options = {}
     options["mode"] = mode
     options["format"] = outFormat
     options["answers"] = mode in ("answers", "solutions")
     options["template"] = os.path.join(fileDir, "templates", "template.tex")
     options["fileStem"] = outStem
+    options["outDir"] = outDir
     options["seed"] = seed
 
     if inDir is None:
