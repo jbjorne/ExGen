@@ -1,8 +1,6 @@
 # Feature Vectors
 
-A telemarketing company is calling potential customers from their database. The most likely new customers to call are predicted using the nearest neighbour algorithm, which is trained on customers already called (training set).
-
-The feature vectors are constructed using the categorical variables 1) gender (0=male, 1=female), 2) age (0 if under 50 else 1) 3) city (0=London, 1=other), 4) children (0=no, 1=yes) and 5) marital status (0=unmarried, 1=married). The 5-dimensional feature vector could thus be for example [00101](example). The class of a person is [1](example) if there have been any sales and [-1](example) otherwise.
+A telemarketing company is calling potential customers from their database. The most likely new customers to call are predicted using the nearest neighbour algorithm, which is trained on customers already called (training set). Feature vectors are constructed using the categorical variables 1) gender (0=male, 1=female), 2) age (0 if under 50 else 1) 3) city (0=London, 1=other), 4) children (0=no, 1=yes) and 5) marital status (0=unmarried, 1=married). The 5-dimensional feature vector could thus be for example [00101](example). The class of a person is [1](example) if there have been any sales and [-1](example) otherwise.
 
 [persons]()
 
