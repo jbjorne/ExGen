@@ -2,7 +2,7 @@
 
 In the 8-puzzle, at each turn, you can move one of the tiles bordering the empty space into the empty space (that is, there are two or three valid moves at each turn) in order to reach the goal state:
 
-![1.0](SlidingPuzzleGoal.png)
+![0.1](SlidingPuzzleGoal.png)
 
 Your goal is to use a heuristic search to get from the starting state below to the goal state in as few moves as possible. The heuristic to use is the [heuristic]().
 

@@ -101,11 +101,11 @@ def addNodes(current, maxLevel, visited, graph, getHeuristic):
 def nodeToString(node, xlabel=True):
     label = "{" + "|".join(["{" + "|".join([str(x) if x != 0 else "_" for x in row]) + "}" for row in node["state"]]) + "}"
     name = "N" + str(node["index"])
-    name += " [label=\"" + label + "\""
+    s = name + " [label=\"" + label + "\""
     if xlabel:
-        name += ",xlabel=\"" + name + "\"
-    name += "];\n"
-    return name
+        s += ",xlabel=\"" + name + "\""
+    s += "];\n"
+    return s
 
 def shuffle(state, numSteps, rand):
     seen = set()
@@ -142,9 +142,18 @@ def drawNode(outDir, node):
     graph += "concentrate=True;\n"
     graph += "rankdir=TB;\n"
     graph += "node [shape=record, margin=0];\n"
-    graph += "{\n"
     graph += nodeToString(node, False)
+    graph += "}\n"
+    return graph
 
+def drawDot(graph, outDir, filename):
+    if outDir == None:
+        return
+    with open(os.path.join(outDir, filename + ".dot"), "wt") as f:
+        f.write(graph)
+    cmd = "dot -Tpng " + os.path.join(outDir, filename + ".dot") + " -o " + os.path.join(outDir, filename + ".png")
+    print("Running", cmd)
+    os.system(cmd)
 
 # Question Generation #########################################################
 
@@ -155,10 +164,15 @@ def sliding(options):
     rand = random.Random(seed)
     assert heuristic in HEURISTICS
     data = {"heuristic":HEURISTICS[heuristic]["desc"]}
-    initial = shuffle([[1, 2, 3], [4, 5, 6], [7, 8, 0]], numSteps, rand)
+    goalState = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+    initial = shuffle(goalState, numSteps, rand)
     root, graph = build(initial, numSteps, HEURISTICS[heuristic]["func"])
+    goal = {k:v for k, v in root.items()}
+    goal["state"] = goalState
     data["path"] = ",".join(["N" + str(x["index"]) for x in getPath(root)])
     getRandomNodes(root, data, 3, rand)
+    drawDot(drawNode(options["outDir"], goal), options["outDir"], "SlidingPuzzleGoal")
+    drawDot(graph["source"], options["outDir"], "SlidingPuzzleTree")
     if options["outDir"] != None:
         odir = options["outDir"]
         with open(os.path.join(odir, "SlidingPuzzleTree.dot"), "wt") as f:
