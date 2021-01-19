@@ -75,7 +75,7 @@ def build(initial, numLevels, getHeuristic):
     graph["source"] += "forcelabels=true;\n"
     graph["source"] += "concentrate=True;\n"
     graph["source"] += "rankdir=TB;\n"
-    graph["source"] += "node [shape=record];\n"
+    graph["source"] += "node [shape=record, margin=0];\n"
     graph["source"] += nodeToString(root)
     addNodes(root, numLevels, set(), graph, getHeuristic)
     graph["source"] += "}"

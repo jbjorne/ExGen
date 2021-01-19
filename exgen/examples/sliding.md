@@ -13,4 +13,4 @@ A part of the subtree of potential moves is shown below (it does not reach the g
 * Heuristic value for node [n2](): [h2](answer)
 * Heuristic value for node [n3](): [h3](answer)
 
-![1.0](exgenTree.png)
+![0.5](exgenTree.png)
