@@ -69,7 +69,8 @@ def getMoves(state):
 def build(initial, numLevels, getHeuristic):
     positions = getPositions(len(initial), len(initial[0]))
     print(initial, positions)
-    root = {"index":0, "state":initial, "parent":None, "children":[], "heuristic":getHeuristic(initial, positions), "level":0}
+    root = {"index":0, "state":initial, "parent":None, "children":[], "heuristic":getHeuristic(initial, positions), "level":0, "allNodes":[]}
+    root["allNodes"].append(root)
     graph = {}
     graph["source"] = "digraph G {\n"
     graph["source"] += "forcelabels=true;\n"
@@ -89,17 +90,22 @@ def addNodes(current, maxLevel, visited, graph, getHeuristic):
                 positions = getPositions(len(state), len(state[0]))
                 heuristic = getHeuristic(state, positions)
                 visited.add(str(state))
-                node = {"index":len(visited), "state":state, "parent":current, "children":[], "heuristic":heuristic, "level":current["level"] + 1}
+                node = {"index":len(visited), "state":state, "parent":current, "children":[], "heuristic":heuristic, "level":current["level"] + 1, "allNodes":current["allNodes"]}
                 current["children"].append(node)
+                current["allNodes"].append(node)
         for node in current["children"]:
             graph["source"] += nodeToString(node)
             graph["source"] += "N" + str(current["index"]) + " -> " + "N" + str(node["index"]) + ";\n"
             addNodes(node, maxLevel, visited, graph, getHeuristic)
 
-def nodeToString(node):
+def nodeToString(node, xlabel=True):
     label = "{" + "|".join(["{" + "|".join([str(x) if x != 0 else "_" for x in row]) + "}" for row in node["state"]]) + "}"
     name = "N" + str(node["index"])
-    return name + " [label=\"" + label + "\"" + "xlabel=\"" + name + "\"];\n"
+    name += " [label=\"" + label + "\""
+    if xlabel:
+        name += ",xlabel=\"" + name + "\"
+    name += "];\n"
+    return name
 
 def shuffle(state, numSteps, rand):
     seen = set()
@@ -115,19 +121,49 @@ def shuffle(state, numSteps, rand):
             state = rand.sample(unused, 1)[0]
     return state
 
+def getPath(node):
+    path = [node]
+    while len(node["children"]) > 0:
+        node = sorted(node["children"], key=lambda x: x["heuristic"])[0]
+        path.append(node)
+    return path
+
+def getRandomNodes(root, data, numNodes, rand):
+    nodes = sorted(rand.sample(root["allNodes"], numNodes), key=lambda x: x["index"])
+    for i in range(numNodes):
+        node = nodes[i]
+        data["n" + str(i + 1)] = "N" + str(node["index"])
+        data["h" + str(i + 1)] = node["heuristic"]
+
+def drawNode(outDir, node):
+    if outDir == None:
+        return
+    graph = "digraph G {\n"
+    graph += "concentrate=True;\n"
+    graph += "rankdir=TB;\n"
+    graph += "node [shape=record, margin=0];\n"
+    graph += "{\n"
+    graph += nodeToString(node, False)
+
+
 # Question Generation #########################################################
 
 def sliding(options):
     heuristic = "OOP"
     numSteps = 2
     seed = options["seed"]
+    rand = random.Random(seed)
     assert heuristic in HEURISTICS
     data = {"heuristic":HEURISTICS[heuristic]["desc"]}
-    initial = shuffle([[1, 2, 3], [4, 5, 6], [7, 8, 0]], numSteps, random.Random(seed))
+    initial = shuffle([[1, 2, 3], [4, 5, 6], [7, 8, 0]], numSteps, rand)
     root, graph = build(initial, numSteps, HEURISTICS[heuristic]["func"])
-    with open(options["fileStem"] + "Tree.dot", "wt") as f:
-        f.write(graph["source"])
-    cmd = "dot -Tpng " + options["fileStem"] + "Tree.dot" + " -o " + options["fileStem"] + "Tree.png"
-    print("Running", cmd)
-    os.system(cmd)
+    data["path"] = ",".join(["N" + str(x["index"]) for x in getPath(root)])
+    getRandomNodes(root, data, 3, rand)
+    if options["outDir"] != None:
+        odir = options["outDir"]
+        with open(os.path.join(odir, "SlidingPuzzleTree.dot"), "wt") as f:
+            f.write(graph["source"])
+        cmd = "dot -Tpng " + os.path.join(odir, "SlidingPuzzleTree.dot") + " -o " + os.path.join(odir, "SlidingPuzzleTree.png")
+        print("Running", cmd)
+        os.system(cmd)
     return data
