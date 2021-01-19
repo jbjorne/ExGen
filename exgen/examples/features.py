@@ -5,8 +5,8 @@ from collections import OrderedDict
 class ValidationError(Exception):
     pass
 
-surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor", "Robinson", "Thompson"]
-maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar", "Charlie", "Daniel", "Joshua"]
+surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor", "Robinson", "Thompson", "Stevens", "Baker", "Owen"]
+maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar", "Charlie", "Daniel", "Joshua", "Henry", "Theo", "Arthur"]
 femaleNames = ["Olivia", "Lily", "Sophia", "Emily", "Chloe", "Grace", "Alice", "Sarah", "Emma", "Lucy", "Maya", "Ella"]
 cities = ["London", "Manchester", "Birmingham", "Leeds", "Glasgow", "Liverpool", "Newcastle"]
 
@@ -46,7 +46,6 @@ def calcVectors(persons, data):
 
 def calcDistances(persons, vectors, data, testCutoff):
     classes = set()
-    numCorrect = 0
     for i in range(testCutoff, len(vectors)):
         distances = []
         for j in range(0, testCutoff):
@@ -59,13 +58,9 @@ def calcDistances(persons, vectors, data, testCutoff):
             raise ValidationError("Multiple nearest neighbours")
         predictedClass = getClass(persons[nearest[1]])
         classes.add(predictedClass)
-        if predictedClass == getClass(persons[i]):
-            numCorrect += 1
         data["class" + str(i+1)] = predictedClass
     if len(classes) == 1:
         raise ValidationError("Test set examples are of the same class")
-    if numCorrect == 0:
-        raise ValidationError("Both predictions incorrect")
 
 def makeData(seed):
     data = {}
@@ -82,8 +77,12 @@ def makeData(seed):
         person["city"] = rand.choice(["London", rand.choice(cities)])
         person["children"] = rand.randrange(0,4)
         person["married"] = rand.choice(["yes", "no"])
-        person["sales"] = 0 if i % 2 == 0 else rand.randrange(100, 900, 20)
-        person["called"] = "true" if i < 4 else "false"
+        if i < 4:
+            person["called"] = "true"
+            person["sales"] = 0 if i % 2 == 0 else rand.randrange(100, 900, 20)
+        else:
+            person["called"] = "false"
+            person["sales"] = "-"
         persons.append(person)
     vectors = calcVectors(persons, data)
     calcDistances(persons, vectors, data, 4)
