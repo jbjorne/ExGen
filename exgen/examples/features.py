@@ -4,14 +4,13 @@ import random
 from scipy.spatial.distance import cityblock
 
 # Define the values from which the randomized examples are built
-surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor", "Robinson", "Thompson", "Stevens", "Baker", "Owen"]
-maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar", "Charlie", "Daniel", "Joshua", "Henry", "Theo", "Arthur"]
-femaleNames = ["Olivia", "Lily", "Sophia", "Emily", "Chloe", "Grace", "Alice", "Sarah", "Emma", "Lucy", "Maya", "Ella"]
+surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor"]
+maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar", "Charlie", "Daniel"]
+femaleNames = ["Olivia", "Lily", "Sophia", "Emily", "Chloe", "Grace", "Alice", "Sarah", "Emma", "Lucy"]
 cities = ["London"] * 6 + ["Manchester", "Birmingham", "Leeds", "Glasgow", "Liverpool", "Newcastle"]
 
 def features(options):
     """ Generate the data for the feature vector exercise. """
-    # Generate the randomized person examples
     persons = []
     r = random.Random(options["seed"])
     for i in range(6):
@@ -31,11 +30,9 @@ def features(options):
 
 def vectorize(persons):
     """ Convert the person examples into feature vectors """
-    return [[0 if p["gender"] == "female" else 1, 
-             0 if p["age"] < 50 else 1,
-             0 if p["city"] == "London" else 1, 
-             0 if p["children"] == 0 else 1,
-             0 if p["married"] != "yes" else 1] for p in persons]
+    return [[0 if p["gender"] == "female" else 1,  0 if p["age"] < 50 else 1,
+             0 if p["city"] == "London" else 1,  0 if p["children"] == 0 else 1,
+             0 if p["married"] == "no" else 1] for p in persons]
 
 def manhattan(persons, vectors, data, testCutoff):
     """ Calculate the distances and nearest neighbours between the train and test set vectors """
