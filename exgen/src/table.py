@@ -1,5 +1,12 @@
 import xml.etree.ElementTree as ET
 
+def makeTable(d):
+    rows = []
+    rows.append([x for x in d[0].keys()])
+    for item in d:
+        rows.append([x for x in item.values()])
+    return {"type":"table", "rows":rows, "headers":True}
+
 class Answer():
     def __init__(self, content):
         self.content = content

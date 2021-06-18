@@ -1,3 +1,4 @@
+from exgen.src.table import makeTable
 from exgen.src.errors import ValidationError
 import random, itertools
 from scipy.spatial.distance import cityblock
@@ -44,12 +45,8 @@ def features(options):
             "children":r.randrange(0,4), "married":r.choice(["yes", "no"]),
             "called":"true" if i < 4 else "false", 
             "sales":(0 if i % 2 == 0 else r.randrange(100, 900, 20)) if i < 4 else "-"})
-    rows = []
-    rows.append([x for x in persons[0].keys()])
-    for person in persons:
-        rows.append([x for x in person.values()])
-    data = {"persons":{"type":"table", "rows":rows, "headers":True}}
+    data = makeTable(persons)
     vectors = vectorize(persons)
-    manhattan(persons, vectors, data, 4)
     data.update({"vec" + str(i+1):str(v) for i,v in enumerate(vectors)})
+    manhattan(persons, vectors, data, 4)
     return data
