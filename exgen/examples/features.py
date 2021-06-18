@@ -1,9 +1,7 @@
+from exgen.src.errors import ValidationError
 import random
 import sys
 from collections import OrderedDict
-
-class ValidationError(Exception):
-    pass
 
 surnames = [ "Brown", "Wilson", "Evans", "Johnson", "Roberts", "Walker", "Wright", "Taylor", "Robinson", "Thompson", "Stevens", "Baker", "Owen"]
 maleNames = ["Oliver", "Harry", "George", "Noah", "Jack", "Jacob", "Leo", "Oscar", "Charlie", "Daniel", "Joshua", "Henry", "Theo", "Arthur"]
@@ -62,10 +60,10 @@ def calcDistances(persons, vectors, data, testCutoff):
     if len(classes) == 1:
         raise ValidationError("Test set examples are of the same class")
 
-def makeData(seed):
+def features(options):
     data = {}
     persons = []
-    rand = random.Random(seed)
+    rand = random.Random(options["seed"])
     for i in range(6):
         person = OrderedDict()
         person["id"] = i + 1
@@ -91,17 +89,4 @@ def makeData(seed):
     for person in persons:
         rows.append([x for x in person.values()])
     data["persons"] = {"type":"table", "rows":rows, "headers":True}
-    return data
-
-def features(options):
-    data = None
-    seed = options["seed"]
-    seedRand = random.Random(seed)
-    while data is None:
-        try:
-            data = makeData(seed)
-            data["variant"] = "#" + str(seed)
-        except ValidationError as e:
-            #print(e)
-            seed = seedRand.randrange(0, 1000000000)
     return data

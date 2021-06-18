@@ -1,3 +1,5 @@
+import random
+from exgen.examples.features import ValidationError
 import os
 from .src import md
 import importlib
@@ -23,7 +25,15 @@ def execScript(function, scriptPath, options):
         scriptGlobals = {}
         exec(code, scriptGlobals)
         #data = eval(function + "(" + str(seed) + ")", scriptGlobals)
-        data = scriptGlobals[function](options)
+        data = None
+        scriptOptions = options.copy()
+        seedRand = random.Random()
+        while data is None:
+            try:
+                data = scriptGlobals[function](scriptOptions)
+                data["variant"] = "#" + str(scriptOptions["seed"])
+            except ValidationError as e:
+                scriptOptions["seed"] = seedRand.randrange(0, 1000000000)
     return data
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
