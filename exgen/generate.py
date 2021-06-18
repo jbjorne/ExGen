@@ -28,12 +28,15 @@ def execScript(function, scriptPath, options):
         data = None
         scriptOptions = options.copy()
         seedRand = random.Random()
-        while data is None:
+        exceptions = []
+        while data is None and len(exceptions) < 10:
             try:
                 data = scriptGlobals[function](scriptOptions)
                 data["variant"] = "#" + str(scriptOptions["seed"])
             except ValidationError as e:
+                exceptions.append(e)
                 scriptOptions["seed"] = seedRand.randrange(0, 1000000000)
+        print(exceptions)
     return data
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
