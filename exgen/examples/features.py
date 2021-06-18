@@ -22,11 +22,10 @@ def vectorize(persons):
 def manhattan(persons, vectors, data, testCutoff):
     trainSet = [x for x in range(0, testCutoff)]
     testSet = [x for x in range(testCutoff, len(vectors))]
-    distances = [(cityblock(vectors[pair[0]], vectors[pair[1]]), pair[0], pair[1]) for pair in itertools.product(testSet,trainSet)]
-    for d, i, j in distances:
-        data["dist" + str(i+1) + "-" + str(j+1)] = d
     for i in testSet:
         distances = sorted([(cityblock(vectors[i], vectors[j]), j) for j in trainSet])
+        for distance in distances:
+            data["dist" + str(i+1) + "-" + str(distance[1]+1)] = distance[0]
         if distances[0][0] == distances[1][0]:
             raise ValidationError("Multiple nearest neighbours")
         persons[i]["predicted"] = -1 if persons[distances[0][1]]["sales"] == 0 else 1
