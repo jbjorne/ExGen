@@ -1,3 +1,5 @@
+import os
+import base64
 from .rendererCls import Renderer
 
 class MoodleRenderer(Renderer):
@@ -17,6 +19,12 @@ class MoodleRenderer(Renderer):
     def makeParagraph(self, tokens):
         return "<p>" + self.render(tokens) + "</p>\n"
     
+    def makeItalic(self, tokens):
+        return "<i>" + self.render(tokens) + "</i>\n"
+
+    def makeBold(self, tokens):
+        return "<b>" + self.render(tokens) + "</b>\n"
+    
     def makeList(self, tokens):
         tex = "<ol>\n"
         for token in tokens:
@@ -26,15 +34,13 @@ class MoodleRenderer(Renderer):
         return tex
 
     def makeImage(self, token):
-        width = 1.0
-        try:
-            weight = float(token.get("alt"))
-            width = 0.0
-        except ValueError:
-            pass
-        tex = "<p><img src=\"\" class=\"img-responsive atto_image_button_text-bottom\"></p>\n"
-        #return tex
-        return "[[[" + token["src"] + "]]]"
+        filename = os.path.join(self.options["outDir"], token["src"])
+        with open(filename, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode('UTF-8')
+
+        src="data:image/png;base64," + encoded
+        #return "<img src=\"" + src + "\"  width=\"500\" height=\1\/>"
+        return "<img src=\"" + src + "\" width=\"500\" height=\"1\" class=\"img-responsive atto_image_button_text-bottom\" />"
     
     def makeExample(self, token):
         text = "<span class=\"\" style=\"color: rgb(125, 159, 211);\">"

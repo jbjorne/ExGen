@@ -27,6 +27,12 @@ class Renderer:
 
     def makeParagraph(self, tokens):
         raise NotImplementedError
+    
+    def makeItalic(self, tokens):
+        raise NotImplementedError
+    
+    def makeBold(self, tokens):
+        raise NotImplementedError
 
     def makeList(self, tokens):
         raise NotImplementedError
@@ -75,6 +81,10 @@ class Renderer:
                     span = self.makeImage(token)
                 elif tt == "codespan":
                     span = self.makeCode(token)
+                elif tt == "emphasis":
+                    span = self.makeItalic(children)
+                elif tt == "strong":
+                    span = self.makeBold(children)
                 else:
                     print("Unknown token", token)
                 if span not in ("", None) and not self.skip:
