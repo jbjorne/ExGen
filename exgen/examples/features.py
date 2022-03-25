@@ -30,7 +30,7 @@ def features(options):
 
 def vectorize(persons):
     """ Convert the person examples into feature vectors """
-    return [[0 if p["gender"] == "female" else 1,  0 if p["age"] < 50 else 1,
+    return [[0 if p["gender"] == "male" else 1,  0 if p["age"] < 50 else 1,
              0 if p["city"] == "London" else 1,  0 if p["children"] == 0 else 1,
              0 if p["married"] == "no" else 1] for p in persons]
 
