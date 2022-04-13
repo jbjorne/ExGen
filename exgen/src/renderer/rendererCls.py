@@ -1,4 +1,5 @@
 from .. import table
+from .. import md
 import random
 import json
 from .. import arguments
@@ -55,7 +56,7 @@ class Renderer:
     def makeCode(self, token):
         raise NotImplementedError
 
-    def render(self, tokens):
+    def render(self, tokens, skipParagraph=False):
         tex = ""
         if tokens != None:
             for token in tokens:
@@ -72,7 +73,10 @@ class Renderer:
                 elif tt == "block_text":
                     span = self.render(children)
                 elif tt == "paragraph":
-                    span = self.makeParagraph(children)
+                    if skipParagraph:
+                        span = self.render(children)
+                    else:
+                        span = self.makeParagraph(children)
                 elif tt == "link":
                     span = self.processLink(token)
                 elif tt == "list":
@@ -136,4 +140,6 @@ class Renderer:
         if isinstance(item, table.Table):
             return self.makeTable(item) #table.makeLatexTable(item["rows"], rowheaders=item.get("rowheaders"))
         else:
-            return str(item)
+            s = str(item).strip()
+            s = self.render(md.parseString(s), True) if s != "" else s
+            return s

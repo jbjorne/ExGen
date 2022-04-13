@@ -13,10 +13,13 @@ RENDERERS = {
     "moodle":moodleRenderer.MoodleRenderer
 }
 
-def parse(mdPath, data=None):
+def parseString(s):
     markdown = mistune.create_markdown(renderer=mistune.AstRenderer())
+    return markdown(s)
+
+def parse(mdPath, data=None):
     with open(mdPath, "rt") as f:
-        tokens = markdown(f.read())
+        tokens = parseString(f.read())
     if data == None:
         data = {}
     return {"tokens":tokens, "data":data}
