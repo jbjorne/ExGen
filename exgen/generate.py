@@ -1,6 +1,6 @@
 import random
 from exgen.examples.features import ValidationError
-import os
+import sys, os
 from .src import md
 import importlib
 import pathlib
@@ -22,6 +22,9 @@ def execScript(function, scriptPath, options):
         print("Running script", scriptPath)
         with open(scriptPath) as f:
             code = compile(f.read(), scriptPath, 'exec')
+        scriptDir = os.path.dirname(scriptPath)
+        if scriptDir not in sys.path:
+            sys.path.append(scriptDir)
         scriptGlobals = {}
         exec(code, scriptGlobals)
         #data = eval(function + "(" + str(seed) + ")", scriptGlobals)
