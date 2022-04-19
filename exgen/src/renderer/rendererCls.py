@@ -19,6 +19,9 @@ class Renderer:
         self.headingLevel = 0
         self.skip = False
     
+    def renderString(self, s):
+        return self.render(md.parseString(s), True) if s != "" else s
+    
     def getHeading(self, content):
         raise NotImplementedError
     
@@ -97,7 +100,7 @@ class Renderer:
 
     def processLink(self, token):
         var = arguments.parseVar(self.render(token.get("children")), token["link"], self.data)
-        print(var)
+        #print("LINK", token, var)
         if var["type"] == "example":
             return self.makeExample(token)
         elif var["type"] == "answer":
@@ -140,6 +143,5 @@ class Renderer:
         if isinstance(item, table.Table):
             return self.makeTable(item) #table.makeLatexTable(item["rows"], rowheaders=item.get("rowheaders"))
         else:
-            s = str(item).strip()
-            s = self.render(md.parseString(s), True) if s != "" else s
-            return s
+            #print("INSERT VAR", var)
+            return self.renderString(str(item).strip())

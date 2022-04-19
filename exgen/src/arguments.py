@@ -48,6 +48,8 @@ def parseArgs(text, mainArgName=None):
                     kwargs = jsonObj
                 else:
                     raise Exception("Unsupported JSON object " + str(jsonObj))
+        elif text.startswith("\"") and text.endswith("\""):
+            args, kwargs = [text.strip("\"")], {}
         else:
             args, kwargs = parseArgsList(text)
     if mainArgName != None:

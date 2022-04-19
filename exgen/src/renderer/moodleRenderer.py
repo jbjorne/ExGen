@@ -48,6 +48,7 @@ class MoodleRenderer(Renderer):
         return text
     
     def makeAnswer(self, var):
+        #print ("MAKE ANSWER", var)
         if isinstance(var["value"], dict):
             value = var["value"]
             items = []

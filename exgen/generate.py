@@ -39,7 +39,7 @@ def execScript(function, scriptPath, options):
             except ValidationError as e:
                 exceptions.append(e)
                 scriptOptions["seed"] = seedRand.randrange(0, 1000000000)
-        print(exceptions)
+        print(data, exceptions)
     return data
 
 def generate(inDir, exercises, outStem, outFormat, mode, seed):
