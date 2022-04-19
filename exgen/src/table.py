@@ -51,9 +51,9 @@ class Table():
         return tex
 
     def toMoodle(self, renderer):
-        table = ET.Element("table")
+        table = ET.Element("table", style="width: 100%;")
         #style = "border: 1px solid black;"
-        style = """ border="1" cellpadding="1" cellspacing="1" style="width:500px" """
+        style = "border-width: 1px; border-style: solid; border-color: rgb(51, 51, 51);"
         headRow = ET.SubElement(ET.SubElement(table, "thead"), "tr")
         rows = self.rows
         if self.headers:
@@ -71,7 +71,7 @@ class Table():
                 #    values[i] = "\\textbf{" + str(row[i]) + "}"
             rowElem = ET.SubElement(body, "tr")
             for value in values:
-                ET.SubElement(rowElem, "td", style=style).text = str(value)
+                ET.SubElement(rowElem, "td", style=style).text = str(value) if value != None else ""
             numRow += 1
         return ET.tostring(table).decode()
 
