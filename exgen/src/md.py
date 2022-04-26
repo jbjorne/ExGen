@@ -35,15 +35,19 @@ def renderElements(elements, options):
 
 def renderDoc(elements, options):
     content = renderElements(elements, options)
+    filePath = None
+    if options["outDir"] != None and options["exercise"] != None:
+        filePath = os.path.join(options["outDir"], options["exercise"])
     if options["format"] == "latex":   
         with open(options["template"], "rt") as f:
             template = f.read()
             template = template.replace("\\titletext{}", options.get("title", "Exercises"))
             template = template.replace("\\content{}", content)
-        if options["fileStem"] != None:
-            with open(options["fileStem"] + ".tex", "wt") as f:
+        if filePath != None:
+            with open(filePath + ".tex", "wt") as f:
                 f.write(template)
         return template
     else:
-        with open(options["fileStem"] + ".html", "wt") as f:
-            f.write(content)
+        if filePath != None:
+            with open(filePath + ".html", "wt") as f:
+                f.write(content)
