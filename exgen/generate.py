@@ -54,6 +54,7 @@ def generate(inDir, exercises, outDir, outFormat, mode, seed):
     options["answers"] = mode in ("answers", "solutions")
     options["template"] = os.path.join(fileDir, "templates", "template.tex")
     options["outDir"] = outDir
+    options["scriptDir"] = inDir
     options["seed"] = seed
 
     if inDir is None:
