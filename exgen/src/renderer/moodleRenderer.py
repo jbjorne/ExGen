@@ -49,7 +49,10 @@ class MoodleRenderer(Renderer):
     
     def makeAnswer(self, var):
         #print ("MAKE ANSWER", var)
-        if isinstance(var["value"], dict):
+        value = var["value"]
+        if not isinstance(value, dict):
+            value = {"correct":value}
+        if value.get("choices") != None:
             value = var["value"]
             items = []
             for i in range(len(value["choices"])):
@@ -62,7 +65,7 @@ class MoodleRenderer(Renderer):
                 self.rand.shuffle(items)
             return "{1:MC:" + "~".join(items) + "}"
         else:
-            return "{1:SA:=" + str(var["value"]) + "}"
+            return "{1:SA:=" + str(value["correct"]) + "}"
     
     def makeURL(self, token):
         return "<a href=\"" + token["link"] + "\">" + self.render(token.get("children")) + "</a>"

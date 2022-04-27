@@ -7,9 +7,9 @@ def makeTable(d):
         rows.append([x for x in item.values()])
     return {"type":"table", "rows":rows, "headers":True}
 
-class Answer():
-    def __init__(self, content):
-        self.content = content
+# class Answer():
+#     def __init__(self, content):
+#         self.content = content
 
 class Table():
     def __init__(self, rows, headers=False, rowHeaders=False, caption=None):
@@ -40,8 +40,8 @@ class Table():
         for row in rows:
             values = [x for x in row]
             for i in range(self.numCols):
-                if isinstance(values[i], Answer):
-                    values[i] = renderer.getAnswer(values[i])
+                if isinstance(values[i], dict) and values[i].get("type") == "answer":
+                    values[i] = renderer.makeAnswer({"value": values[i]})
                 if self.rowHeaders and i == 0:
                     values[i] = "\\textbf{" + str(row[i]) + "}"
             tex += " & ".join([str(x) if x is not None else "" for x in values]) + " \\\\\n"
@@ -65,8 +65,8 @@ class Table():
         for row in rows:
             values = [x for x in row]
             for i in range(self.numCols):
-                if isinstance(values[i], Answer):
-                    values[i] = renderer.getAnswer(values[i])
+                if isinstance(values[i], dict) and values[i].get("type") == "answer":
+                    values[i] = renderer.makeAnswer({"value": values[i]})
                 #if self.rowHeaders and i == 0:
                 #    values[i] = "\\textbf{" + str(row[i]) + "}"
             rowElem = ET.SubElement(body, "tr")
