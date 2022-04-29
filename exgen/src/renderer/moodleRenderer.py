@@ -1,5 +1,6 @@
 import os
 import base64
+import xml.etree.ElementTree as ET
 from .rendererCls import Renderer
 
 class MoodleRenderer(Renderer):
@@ -53,7 +54,6 @@ class MoodleRenderer(Renderer):
         if not isinstance(value, dict):
             value = {"correct":value}
         if value.get("choices") != None:
-            value = var["value"]
             items = []
             for i in range(len(value["choices"])):
                 item = value["choices"][i]
@@ -70,8 +70,31 @@ class MoodleRenderer(Renderer):
     def makeURL(self, token):
         return "<a href=\"" + token["link"] + "\">" + self.render(token.get("children")) + "</a>"
     
-    def makeTable(self, t):
-        return t.toMoodle(self)
+    def makeTable(self, item):
+        item = self.preprocessTable(item)
+        table = ET.Element("table", style="width: 100%;")
+        style = "border-width: 1px; border-style: solid; border-color: rgb(51, 51, 51);"
+        headRow = ET.SubElement(ET.SubElement(table, "thead"), "tr")
+        rows = item["rows"]
+        if item.get("headers"):
+            for header in rows[0]:
+                ET.SubElement(headRow, "th", scope="col", style=style).text = str(header) if header != None else ""
+            rows = rows[1:]
+        body = ET.SubElement(table, "tbody")
+        numCols = len(rows[0])
+        numRow = 0
+        for row in rows:
+            values = [x for x in row]
+            for i in range(numCols):
+                if isinstance(values[i], dict) and values[i].get("type") == "answer":
+                    values[i] = self.makeAnswer({"value": values[i]})
+                #if self.rowHeaders and i == 0:
+                #    values[i] = "\\textbf{" + str(row[i]) + "}"
+            rowElem = ET.SubElement(body, "tr")
+            for value in values:
+                ET.SubElement(rowElem, "td", style=style).text = str(value) if value != None else ""
+            numRow += 1
+        return ET.tostring(table).decode()
     
     def makeCode(self, token):
         return "$$" + token["text"] + "$$"

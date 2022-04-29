@@ -1,4 +1,3 @@
-from exgen.src.table import makeTable
 from exgen.src.errors import ValidationError
 import random
 from scipy.spatial.distance import cityblock
@@ -21,10 +20,10 @@ def features(options):
             "children":r.randrange(0,4), "married":r.choice(["yes", "no"]),
             "called":"true" if i < 4 else "false", 
             "sales":(0 if i % 2 == 0 else r.randrange(100, 900, 20)) if i < 4 else "-"})
-    data = makeTable(persons)
+    data = {"persons":{"type":"table", "rows":persons}}
     # Convert the examples into vectors and calculate the distances and nearest neighbours
     vectors = vectorize(persons)
-    data.update({"vec" + str(i+1):str(v) for i,v in enumerate(vectors)})
+    data.update({"vec" + str(i+1):"".join([str(x) for x in v]) for i,v in enumerate(vectors)})
     manhattan(persons, vectors, data, 4)
     return data
 

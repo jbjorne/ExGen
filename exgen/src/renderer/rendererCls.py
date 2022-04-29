@@ -1,15 +1,6 @@
-from .. import table
 from .. import md
 import random
-import json
 from .. import arguments
-
-def isNumber(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
 
 class Renderer:
     def __init__(self, data, options, seed=1):
@@ -138,10 +129,27 @@ class Renderer:
     def insertVar(self, var):
         item = var["value"]
         if isinstance(item, dict) and item.get("type") == "table":
-            item = {x:item[x] for x in item if x != "type"}
-            item = table.Table(**item)
-        if isinstance(item, table.Table):
-            return self.makeTable(item) #table.makeLatexTable(item["rows"], rowheaders=item.get("rowheaders"))
+            return self.makeTable(item)
         else:
             #print("INSERT VAR", var)
             return self.renderString(str(item).strip())
+    
+    # Utilities ###############################################################
+
+    def isNumber(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    def preprocessTable(self, table):
+        if isinstance(table["rows"][0], dict):
+            columns = [x for x in table["rows"][0].keys()]
+            rows = [columns]
+            for row in table["rows"]:
+                rows.append([row[col] for col in columns])
+            table = {key:value for key, value in table.items()}
+            table["rows"] = rows
+            table["headers"] = True
+        return table

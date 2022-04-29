@@ -2,27 +2,23 @@
 
 Rakennetaan roskapostisuodatin, joka suodattaa viestit otsikon perusteella, käyttäen lähimmän naapurin menetelmää. Käytössä on seuraava aineisto, jolle on määritelty roskapostiluokka (kyllä tai ei):
 
-* [](email1)
-* [](email2)
-* [](email3)
-* [](email4)
-* [](email5)
-* [](email6)
-* [](email7)
+* [email1]()
+* [email2]()
+* [email3]()
+* [email4]()
+* [email5]()
+* [email6]()
+* [email7]()
 
 Aineiston viestit 1-5 muodostavat koulutusaineiston ja 6-7 testiaineiston. Jotta lähimmän naapurin menetelmä voisi käsitellä aineistoa, esimerkit pitää muuntaa piirrevektoreiksi.Roskapostisuodattimelle on tähän tarkoitukseen laadittu avainsanakartta:
 
-* [](key1)
-* [](key2)
-* [](key3)
-* [](key4)
-* [](key5)
+** [key1](), [key2](), [key3](), [key4](), [key5]() **
 
 Avainsanakartan jokainen sana vastaa piirrevektorin yhtä ulottuvuutta (vasemmalta oikealle). Piirrevektori esitetään muodossa xxxxx jossa jokainen ulottuvuus voi olla olemassa (1) tai ei (0). Sähköpostiviestin piirrevektori voi siis olla esimerkiksi [00101](example).
 
-## Tehtävä 1. 
+## Tehtävä 
 
-Määritä annetuille sähköposteille piirrevektorit käyttämällä avainsanakarttaa (isoilla ja pienillä kirjaimilla tai välimerkeillä ei ole merkitystä).
+Määritä annetuille sähköposteille piirrevektorit käyttämällä avainsanakarttaa (isoilla ja pienillä kirjaimilla tai välimerkeillä ei ole merkitystä, mutta muuten sanan täytyy vastata täsmälleen aineiston sanaa).
 
 * [vector1](answer)
 * [vector2](answer)
@@ -42,6 +38,8 @@ Määritä testiaineiston vektoreiden (6 ja 7) etäisyys (esimerkiksi [2](exampl
 * d(4,6)=[d46](answer) d(4,7)=[d47](answer)
 * d(5,6)=[d56](answer) d(5,7)=[d57](answer)
 
+Kun etäisyyksiä käytetään lähimmän naapurin menetelmässä, tarkastellaan aineistoa esimerkkien numerojärjestyksessä. Jos on useita lähimpiä naapureita, otetaan niistä ensimmäinen (tai ensimmäiset) numerojärjestyksessä.
+
 ## Tehtävä
 
 Mitkä luokat lähimmän naapurin menetelmä ennustaisi testiesimerkeille?
@@ -56,7 +54,7 @@ Mitkä luokat kolmen lähimmän naapurin menetelmä (KNN, k=3) ennustaisi testie
 * Ennuste esimerkille 6: [knn6](answer)
 * Ennuste esimerkille 7: [knn7](answer)
 
-[](solution:begin)
+[](solution,begin)
 
 Tehtävässä nähdään, miten piirteiden suunnittelu (feature engineering) toimii. Piirrevektoreiden rakentamisessa on hyvä huomata, miten sopimuksenvaraista esimerkiksi luonnollisen kielen muuttaminen koneen ymmärtämään muotoon on. Avainsanakartta on todennäköisesti laadittu katselemalla aineistoa ja päättelemällä, mitkä olisivat toimivia avainsanoja. Oikeassa tekstinlouhintajärjestelmässä piirteitä olisi huomattavasti enemmän, jopa tuhansia, ja niitä tuotettaisiin erilaisilla säännöillä, esim. roskapostisuodattimen yksittäinen piirre voisi merkitä sitä, että tekstissä on sana, jossa on numeroita kirjainten keskellä, koska roskapostittajat pyrkivät kiertämään avainsanojen tunnistusta tyyliin 'v1agra'. Tällaisia piirteitä, jotka joko löytyvät tai eivät löydy esimerkistä (eli ovat 1 tai 0) kutsutaan kategorisiksi piirteiksi.
 
@@ -64,6 +62,6 @@ Piirrevektorin toiminnassa oleellista on, että tietokoneen havaitsema samankalt
 
 Esimerkkien etäisyys lasketaan Manhattan-etäisyytenä (se voisi yhtä hyvin olla esim. euklidinen tai kosinietäisyys). Koska vektoreiden arvot ovat joko nollia tai ykkösiä, Manhattan-etäisyyden laskeminen pelkistyy siihen, että lasketaan kuinka monta sellaista ulottuvuutta on, joissa vektoreilla on eri arvo.
 
-Lähimmän naapurin löytäminen meneekin sitten vain käymällä läpi etäisyyslistaa. Jos lähimpiä naapureita on useampi, ei ole mitään varsinaista sääntöä, miten luokka pitäisi valita, jotein tällöin voidaan ottaa vaikka satunnainen lähin esimerkki. KNN menetelmässä useampi lähin naapuri menee luonnollisesti lähimpien naapureiden joukkoon, ja kun `k = 3` niin lähimpien naapureiden joukossa on aina yksiselitteisesti yleisin luokka (kun luokkia on kaksi).
+Lähimmän naapurin löytäminen onnistuukin tämän jälkeen vain käymällä läpi etäisyyslistaa. Jos lähimpiä naapureita on useampi, ei ole mitään varsinaista sääntöä, miten luokka pitäisi valita, joten tällöin voidaan ottaa vaikka satunnainen lähin esimerkki. KNN menetelmässä useampi lähin naapuri menee luonnollisesti lähimpien naapureiden joukkoon, ja kun `k = 3` niin lähimpien naapureiden joukossa on aina yksiselitteisesti yleisin luokka (kun luokkia on kaksi).
 
-[](solution:end)
+[](solution,end)

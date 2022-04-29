@@ -48,19 +48,25 @@ class LatexRenderer(Renderer):
         return "\\textcolor{blue}{" + self.render(token.get("children")) + "}"
     
     def makeAnswer(self, var):
-        if isinstance(var["value"], dict): # Multiple choice
-            listItems = [{"type":"list_item", "children":[{"type":"text", "text":x}]} for x in var["value"]["choices"]]
+        value = var["value"]
+        if not isinstance(value, dict):
+            value = {"correct":value}
+        if value.get("choices") != None:
+            listItems = [{"type":"list_item", "children":[{"type":"text", "text":x}]} for x in value["choices"]]
             if self.options.get("answers") == True:
-                assert var["value"]["correct"] == listItems[0]["children"][0]["text"]
-                listItems[0]["children"][0]["text"] = "\\colorbox{gray!30}{" + str(var["value"]["correct"]) + "}"
-            self.rand.shuffle(listItems)
+                for item in listItems:
+                    if item["children"][0]["text"] == value["correct"]:
+                        item["children"][0]["text"] = "\\colorbox{gray!30}{" + str(value["correct"]) + "}"
+                        break
+            if not value.get("ordered"):
+                self.rand.shuffle(listItems)
             return self.makeList(listItems)
-        else: # Single value
+        else:
             if self.options.get("answers") == True:
-                answer = str(var["value"])
+                answer = str(value["correct"])
                 span = "\\colorbox{gray!30}{%answer}"
             else:
-                answer = var.get("space", 5) * "A "
+                answer = value.get("space", 5) * "A "
                 span = "\\colorbox{gray!30}{\\phantom{%answer}}"
             if len(answer) > 50:
                 answer = "\\parbox{\\textwidth}{" + answer + "}"
@@ -69,8 +75,39 @@ class LatexRenderer(Renderer):
     def makeURL(self, token):
         return self.render(token.get("children")) + " (\\url{" + token["link"] + "})"
     
-    def makeTable(self, t):
-        return t.toTex(self)
+    def makeTable(self, item):
+        item = self.preprocessTable(item)
+        rows = item.get("rows")
+        numCols = len(rows[0])
+
+        tex = "\\begin{table}[H]\n"
+        tex += "\\centering\n"
+        if item.get("caption") != None:
+            tex += "\\caption*{" + item.get("caption") + "}\n"
+            tex += "\\vspace{-3mm}\n"
+        tex += "\\begin{tabular}\n"
+        if item.get("rowHeaders"):
+            tex += "{" + "c | " + " ".join((numCols - 1) * ["c"]) + "}\n"
+        else:
+            tex += "{" + " ".join(numCols * ["c"]) + "}\n"  
+        tex += "\\hline\n"
+        if item.get("headers"):
+            tex += " & ".join(["\\textbf{" + str(x) + "}" if x is not None else "" for x in rows[0]]) + " \\\\\n"
+            tex += "\\hline\n"
+            rows = rows[1:]
+        numRow = 0
+        for row in rows:
+            values = [x for x in row]
+            for i in range(numCols):
+                if isinstance(values[i], dict) and values[i].get("type") == "answer":
+                    values[i] = self.makeAnswer({"value": values[i]})
+                if item.get("rowHeaders") and i == 0:
+                    values[i] = "\\textbf{" + str(row[i]) + "}"
+            tex += " & ".join([str(x) if x is not None else "" for x in values]) + " \\\\\n"
+            numRow += 1
+        tex += "\\hline\n"
+        tex += "\\end{tabular}\n\\end{table}"
+        return tex
     
     def makeCode(self, token):
         return "$" + token["text"] + "$"

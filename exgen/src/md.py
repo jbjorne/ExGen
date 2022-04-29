@@ -1,8 +1,5 @@
 import mistune
-from . import table
 import os
-import random
-import json
 from .renderer import latexRenderer
 from .renderer import moodleRenderer
 from .renderer import examRenderer
