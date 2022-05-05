@@ -28,7 +28,23 @@ Different output formats (such as Moodle) can be chosen with the format (-f) swi
 
 ## Randomizing exercises
 
-Exercise scripts take a seed value parameter, which can be used to initialize a random number generator. The seed value can be defined with the -s switch.
+Some scripts use a seed value parameter, which can be used to initialize a random number generator. The seed value can be defined with the -s switch.
+
+## Defining variables
+
+Questions are written using Markdown text where variables computed by the associated Python script can be inserted using the link syntax `[value](type)`. If the `value` is a variable name found in the dictionary returned by the Python script, it is replaced by the value in the dictionary. Variables do not need to be typed, but several types are supported.
+
+### Answers
+
+The type `answer` marks the variable as an answer which supports different answer types. The answer can be a simple string or number, or it can be a multiple choice question. Multiple choice answers can be defined as a semicolon-separated list (CSV) or as a JSON list or dictionary.
+
+### Solutions
+
+The types `solution:begin` and `solution:end` can be used to enclose a solution section which can be revealed to the students only after the exam.
+
+### Tables
+
+Tables can be defined as named variables produced by the script. A table is defined as a dictionary object with the key `type` set as `table`. The `rows` of the table can be defined either as a list of lists or dictionaries. Answers can be embedded in tables as dictionary objects with the `type` set as `answer` and the `value` as the answer value.
 
 ## Advanced usage
 
