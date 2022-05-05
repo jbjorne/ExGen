@@ -54,7 +54,7 @@ Mitkä luokat kolmen lähimmän naapurin menetelmä (KNN, k=3) ennustaisi testie
 * Ennuste esimerkille 6: [knn6](answer)
 * Ennuste esimerkille 7: [knn7](answer)
 
-[](solution,begin)
+[](solution:begin)
 
 Tehtävässä nähdään, miten piirteiden suunnittelu (feature engineering) toimii. Piirrevektoreiden rakentamisessa on hyvä huomata, miten sopimuksenvaraista esimerkiksi luonnollisen kielen muuttaminen koneen ymmärtämään muotoon on. Avainsanakartta on todennäköisesti laadittu katselemalla aineistoa ja päättelemällä, mitkä olisivat toimivia avainsanoja. Oikeassa tekstinlouhintajärjestelmässä piirteitä olisi huomattavasti enemmän, jopa tuhansia, ja niitä tuotettaisiin erilaisilla säännöillä, esim. roskapostisuodattimen yksittäinen piirre voisi merkitä sitä, että tekstissä on sana, jossa on numeroita kirjainten keskellä, koska roskapostittajat pyrkivät kiertämään avainsanojen tunnistusta tyyliin 'v1agra'. Tällaisia piirteitä, jotka joko löytyvät tai eivät löydy esimerkistä (eli ovat 1 tai 0) kutsutaan kategorisiksi piirteiksi.
 
@@ -64,4 +64,4 @@ Esimerkkien etäisyys lasketaan Manhattan-etäisyytenä (se voisi yhtä hyvin ol
 
 Lähimmän naapurin löytäminen onnistuukin tämän jälkeen vain käymällä läpi etäisyyslistaa. Jos lähimpiä naapureita on useampi, ei ole mitään varsinaista sääntöä, miten luokka pitäisi valita, joten tällöin voidaan ottaa vaikka satunnainen lähin esimerkki. KNN menetelmässä useampi lähin naapuri menee luonnollisesti lähimpien naapureiden joukkoon, ja kun `k = 3` niin lähimpien naapureiden joukossa on aina yksiselitteisesti yleisin luokka (kun luokkia on kaksi).
 
-[](solution,end)
+[](solution:end)

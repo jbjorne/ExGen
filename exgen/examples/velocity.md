@@ -4,8 +4,8 @@ A car is moving at a velocity of [v0]() `m/s`. The driver is accelerating at [a]
 
 The velocity is: [v](answer) `m/s`
 
-[](solution,begin)
+[](solution:begin)
 
 The velocity of an an accelerating object is calculated with the formula `v = v0 + a * t`.
 
-[](solution,end)
+[](solution:end)
