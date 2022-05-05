@@ -1,6 +1,6 @@
 from .. import md
 import random
-import json
+import json, csv
 
 class Renderer:
     def __init__(self, data, options, seed=1, debug=0):
@@ -10,6 +10,10 @@ class Renderer:
         self.headingLevel = 0
         self.skip = False
         self.debug = debug
+    
+    ###########################################################################
+    # Rendering of Markdown AST elements
+    ###########################################################################
     
     def renderString(self, s):
         return self.render(md.parseString(s), True) if s != "" else s
@@ -88,14 +92,18 @@ class Renderer:
                 else:
                     print("Unknown token", token)
                 if span not in ("", None) and not self.skip:
-                    tex += span
+                    tex += str(span)
         return tex
+    
+    ###########################################################################
+    # Processing of Markdown Link Variables
+    ###########################################################################
 
     def processLink(self, token):
-        # Extract the link value and insert known variables
+        # Extract the link type and value
         linkType = token["link"]
         linkValue = self.render(token.get("children"))
-        if linkValue in self.data:
+        if linkValue in self.data: # The value can be a named variable
             linkValue = self.data[linkValue]
         if self.debug >= 1:
             print("LINK", {"type":linkType, "value":linkValue})
@@ -131,7 +139,7 @@ class Renderer:
             return self.renderString(str(value).strip())
     
     def processTable(self, table):
-        if isinstance(table["rows"][0], dict):
+        if isinstance(table["rows"][0], dict): # Rows can be defined also as dictionaries
             columns = [x for x in table["rows"][0].keys()]
             rows = [columns]
             for row in table["rows"]:
@@ -151,7 +159,7 @@ class Renderer:
                     value = json.loads(value)
                     value = {"choices":value, "correct":value[0]}
                 elif not value[0] in ["'", "\""] and not value[-1] in ["'", "\""] and ";" in value:
-                    value = value.split(";")
+                    value = [x for x in csv.reader([value], skipinitialspace=True, delimiter=";")][0]
                     value = {"choices":value, "correct":value[0]}
                 else:
                     value = {"correct":value}
