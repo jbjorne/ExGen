@@ -1,15 +1,15 @@
 from .. import md
 import random
 import json
-#from .. import arguments
 
 class Renderer:
-    def __init__(self, data, options, seed=1):
+    def __init__(self, data, options, seed=1, debug=0):
         self.data = data
         self.options = options
         self.rand = random.Random(seed)
         self.headingLevel = 0
         self.skip = False
+        self.debug = debug
     
     def renderString(self, s):
         return self.render(md.parseString(s), True) if s != "" else s
@@ -57,7 +57,8 @@ class Renderer:
             for token in tokens:
                 tt = token["type"]
                 children = token.get("children")
-                #print(token, tt, children)
+                if self.debug >= 2:
+                    print(token, tt, children)
                 if isinstance(token, str):
                     continue
                 span = None
@@ -91,42 +92,54 @@ class Renderer:
         return tex
 
     def processLink(self, token):
-        #var = arguments.parseVar(self.render(token.get("children")), token["link"], self.data)
+        # Extract the link value and insert known variables
         linkType = token["link"]
         linkValue = self.render(token.get("children"))
         if linkValue in self.data:
             linkValue = self.data[linkValue]
-        #assert "value" not in var, var
-        #var["value"] = self.processVar(var["text"])
-        #print("LINK", {"type":linkType, "value":linkValue})
-        if linkType == "example":
+        if self.debug >= 1:
+            print("LINK", {"type":linkType, "value":linkValue})
+        
+        # Process the link according to its type
+        if linkType == "example": # A highlighted example
             return self.makeExample(token)
         elif linkType == "answer":
-            #arguments.nameUnnamed(var, ["space"])
-            #var["space"] = int(var["space"]) if var["space"] != None else 5
             return self.processAnswer(linkValue)
-        elif linkType.split(",")[0] == "solution":
-            #print("SOLUTION", linkType, linkValue)
-            #arguments.nameUnnamed(var, ["pos"])
-            #if var["pos"] == None:
-            #    var["pos"] = "begin" if self.skip else "end"
-            if linkType == "solution,begin": #var["pos"] == "begin":
+        elif linkType.split(":")[0] == "solution":
+            if linkType == "solution:begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
                     return self.beginSolution()
                 else:
                     self.skip = True
                     return None
-            elif linkType == "solution,end": #var["pos"] == "end":
+            elif linkType == "solution:end":
                 if self.options["mode"] == "solutions":
                     return self.endSolution()
                 else:
                     self.skip = False
                     return None
-        elif linkType in (None, ""):
-            return self.insertVar(linkValue)
+        elif linkType in (None, ""): # An untyped variable
+            return self.processVar(linkValue)            
         else:
             return self.makeURL(token)
+    
+    def processVar(self, value):
+        if isinstance(value, dict) and value.get("type") == "table":
+            return self.processTable(value)
+        else:
+            return self.renderString(str(value).strip())
+    
+    def processTable(self, table):
+        if isinstance(table["rows"][0], dict):
+            columns = [x for x in table["rows"][0].keys()]
+            rows = [columns]
+            for row in table["rows"]:
+                rows.append([row[col] for col in columns])
+            table = {key:value for key, value in table.items()}
+            table["rows"] = rows
+            table["headers"] = True
+        return self.makeTable(table)
     
     def processAnswer(self, value):
         if not isinstance(value, dict):
@@ -144,7 +157,8 @@ class Renderer:
                     value = {"correct":value}
             else:
                 value = {"correct":value}
-        #print("ANSWER", value)
+        if self.debug >= 1:
+            print("ANSWER", value)
         return self.makeAnswer(value)
     
     def beginSolution(self):
@@ -152,30 +166,3 @@ class Renderer:
 
     def endSolution(self):
         raise NotImplementedError
-
-    def insertVar(self, value):
-        if isinstance(value, dict) and value.get("type") == "table":
-            return self.makeTable(value)
-        else:
-            #print("INSERT VAR", var)
-            return self.renderString(str(value).strip())
-    
-    # Utilities ###############################################################
-
-    def isNumber(self, s):
-        try:
-            float(s)
-            return True
-        except ValueError:
-            return False
-
-    def preprocessTable(self, table):
-        if isinstance(table["rows"][0], dict):
-            columns = [x for x in table["rows"][0].keys()]
-            rows = [columns]
-            for row in table["rows"]:
-                rows.append([row[col] for col in columns])
-            table = {key:value for key, value in table.items()}
-            table["rows"] = rows
-            table["headers"] = True
-        return table

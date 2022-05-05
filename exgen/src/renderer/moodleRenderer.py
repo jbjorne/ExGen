@@ -49,10 +49,6 @@ class MoodleRenderer(Renderer):
         return text
     
     def makeAnswer(self, value):
-        #print ("MAKE ANSWER", var)
-        #value = var["value"]
-        #if not isinstance(value, dict):
-        #    value = {"correct":value}
         assert isinstance(value, dict), value
         if value.get("choices") != None:
             items = []
@@ -73,17 +69,16 @@ class MoodleRenderer(Renderer):
     def makeURL(self, token):
         return "<a href=\"" + token["link"] + "\">" + self.render(token.get("children")) + "</a>"
     
-    def makeTable(self, item):
-        item = self.preprocessTable(item)
-        table = ET.Element("table", style="width: 100%;")
+    def makeTable(self, table):
+        root = ET.Element("table", style="width: 100%;")
         style = "border-width: 1px; border-style: solid; border-color: rgb(51, 51, 51);"
-        headRow = ET.SubElement(ET.SubElement(table, "thead"), "tr")
-        rows = item["rows"]
-        if item.get("headers"):
+        headRow = ET.SubElement(ET.SubElement(root, "thead"), "tr")
+        rows = table["rows"]
+        if table.get("headers"):
             for header in rows[0]:
                 ET.SubElement(headRow, "th", scope="col", style=style).text = str(header) if header != None else ""
             rows = rows[1:]
-        body = ET.SubElement(table, "tbody")
+        body = ET.SubElement(root, "tbody")
         numCols = len(rows[0])
         numRow = 0
         for row in rows:
@@ -97,7 +92,7 @@ class MoodleRenderer(Renderer):
             for value in values:
                 ET.SubElement(rowElem, "td", style=style).text = str(value) if value != None else ""
             numRow += 1
-        return ET.tostring(table).decode()
+        return ET.tostring(root).decode()
     
     def makeCode(self, token):
         return "$$" + token["text"] + "$$"

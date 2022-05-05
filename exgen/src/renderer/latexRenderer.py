@@ -75,23 +75,22 @@ class LatexRenderer(Renderer):
     def makeURL(self, token):
         return self.render(token.get("children")) + " (\\url{" + token["link"] + "})"
     
-    def makeTable(self, item):
-        item = self.preprocessTable(item)
-        rows = item.get("rows")
+    def makeTable(self, table):
+        rows = table.get("rows")
         numCols = len(rows[0])
 
         tex = "\\begin{table}[H]\n"
         tex += "\\centering\n"
-        if item.get("caption") != None:
-            tex += "\\caption*{" + item.get("caption") + "}\n"
+        if table.get("caption") != None:
+            tex += "\\caption*{" + table.get("caption") + "}\n"
             tex += "\\vspace{-3mm}\n"
         tex += "\\begin{tabular}\n"
-        if item.get("rowHeaders"):
+        if table.get("rowHeaders"):
             tex += "{" + "c | " + " ".join((numCols - 1) * ["c"]) + "}\n"
         else:
             tex += "{" + " ".join(numCols * ["c"]) + "}\n"  
         tex += "\\hline\n"
-        if item.get("headers"):
+        if table.get("headers"):
             tex += " & ".join(["\\textbf{" + str(x) + "}" if x is not None else "" for x in rows[0]]) + " \\\\\n"
             tex += "\\hline\n"
             rows = rows[1:]
@@ -101,7 +100,7 @@ class LatexRenderer(Renderer):
             for i in range(numCols):
                 if isinstance(values[i], dict) and values[i].get("type") == "answer":
                     values[i] = self.makeAnswer(values[i])
-                if item.get("rowHeaders") and i == 0:
+                if table.get("rowHeaders") and i == 0:
                     values[i] = "\\textbf{" + str(row[i]) + "}"
             tex += " & ".join([str(x) if x is not None else "" for x in values]) + " \\\\\n"
             numRow += 1
