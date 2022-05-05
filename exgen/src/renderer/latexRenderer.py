@@ -47,10 +47,10 @@ class LatexRenderer(Renderer):
     def makeExample(self, token):
         return "\\textcolor{blue}{" + self.render(token.get("children")) + "}"
     
-    def makeAnswer(self, var):
-        value = var["value"]
-        if not isinstance(value, dict):
-            value = {"correct":value}
+    def makeAnswer(self, value):
+        #value = var["value"]
+        #if not isinstance(value, dict):
+        #    value = {"correct":value}
         if value.get("choices") != None:
             listItems = [{"type":"list_item", "children":[{"type":"text", "text":x}]} for x in value["choices"]]
             if self.options.get("answers") == True:
@@ -100,7 +100,7 @@ class LatexRenderer(Renderer):
             values = [x for x in row]
             for i in range(numCols):
                 if isinstance(values[i], dict) and values[i].get("type") == "answer":
-                    values[i] = self.makeAnswer({"value": values[i]})
+                    values[i] = self.makeAnswer(values[i])
                 if item.get("rowHeaders") and i == 0:
                     values[i] = "\\textbf{" + str(row[i]) + "}"
             tex += " & ".join([str(x) if x is not None else "" for x in values]) + " \\\\\n"

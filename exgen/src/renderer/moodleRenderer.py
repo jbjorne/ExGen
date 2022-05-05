@@ -48,16 +48,18 @@ class MoodleRenderer(Renderer):
         text += self.render(token.get("children")) + "</span>"
         return text
     
-    def makeAnswer(self, var):
+    def makeAnswer(self, value):
         #print ("MAKE ANSWER", var)
-        value = var["value"]
-        if not isinstance(value, dict):
-            value = {"correct":value}
+        #value = var["value"]
+        #if not isinstance(value, dict):
+        #    value = {"correct":value}
+        assert isinstance(value, dict), value
         if value.get("choices") != None:
             items = []
             for i in range(len(value["choices"])):
                 item = value["choices"][i]
-                assert not item.startswith("=")
+                if isinstance(item, str):
+                    assert not item.startswith("=")
                 if item == value["correct"]:
                     item = "=" + str(item)
                 items.append(str(item))
@@ -65,6 +67,7 @@ class MoodleRenderer(Renderer):
                 self.rand.shuffle(items)
             return "{1:MC:" + "~".join(items) + "}"
         else:
+            assert "correct" in value, value
             return "{1:SA:=" + str(value["correct"]) + "}"
     
     def makeURL(self, token):
@@ -87,7 +90,7 @@ class MoodleRenderer(Renderer):
             values = [x for x in row]
             for i in range(numCols):
                 if isinstance(values[i], dict) and values[i].get("type") == "answer":
-                    values[i] = self.makeAnswer({"value": values[i]})
+                    values[i] = self.makeAnswer(values[i])
                 #if self.rowHeaders and i == 0:
                 #    values[i] = "\\textbf{" + str(row[i]) + "}"
             rowElem = ET.SubElement(body, "tr")

@@ -1,6 +1,7 @@
 from .. import md
 import random
-from .. import arguments
+import json
+#from .. import arguments
 
 class Renderer:
     def __init__(self, data, options, seed=1):
@@ -90,35 +91,61 @@ class Renderer:
         return tex
 
     def processLink(self, token):
-        var = arguments.parseVar(self.render(token.get("children")), token["link"], self.data)
-        #print("LINK", token, var)
-        if var["type"] == "example":
+        #var = arguments.parseVar(self.render(token.get("children")), token["link"], self.data)
+        linkType = token["link"]
+        linkValue = self.render(token.get("children"))
+        if linkValue in self.data:
+            linkValue = self.data[linkValue]
+        #assert "value" not in var, var
+        #var["value"] = self.processVar(var["text"])
+        #print("LINK", {"type":linkType, "value":linkValue})
+        if linkType == "example":
             return self.makeExample(token)
-        elif var["type"] == "answer":
-            arguments.nameUnnamed(var, ["space"])
-            var["space"] = int(var["space"]) if var["space"] != None else 5
-            return self.makeAnswer(var)
-        elif var["type"] == "solution":
-            arguments.nameUnnamed(var, ["pos"])
-            if var["pos"] == None:
-                var["pos"] = "begin" if self.skip else "end"
-            if var["pos"] == "begin":
+        elif linkType == "answer":
+            #arguments.nameUnnamed(var, ["space"])
+            #var["space"] = int(var["space"]) if var["space"] != None else 5
+            return self.processAnswer(linkValue)
+        elif linkType.split(",")[0] == "solution":
+            #print("SOLUTION", linkType, linkValue)
+            #arguments.nameUnnamed(var, ["pos"])
+            #if var["pos"] == None:
+            #    var["pos"] = "begin" if self.skip else "end"
+            if linkType == "solution,begin": #var["pos"] == "begin":
                 if self.options["mode"] == "solutions":
                     self.headingLevel += 1
                     return self.beginSolution()
                 else:
                     self.skip = True
                     return None
-            elif var["pos"] == "end":
+            elif linkType == "solution,end": #var["pos"] == "end":
                 if self.options["mode"] == "solutions":
                     return self.endSolution()
                 else:
                     self.skip = False
                     return None
-        elif var["type"] == None:
-            return self.insertVar(var)
+        elif linkType in (None, ""):
+            return self.insertVar(linkValue)
         else:
             return self.makeURL(token)
+    
+    def processAnswer(self, value):
+        if not isinstance(value, dict):
+            if isinstance(value, str):
+                value = value.strip()
+                if value.startswith("{") and value.endswith("}"):
+                    value = json.loads(value)
+                elif value.startswith("[") and value.endswith("]"):
+                    value = json.loads(value)
+                    value = {"choices":value, "correct":value[0]}
+                elif not value[0] in ["'", "\""] and not value[-1] in ["'", "\""] and ";" in value:
+                    value = value.split(";")
+                    value = {"choices":value, "correct":value[0]}
+                else:
+                    value = {"correct":value}
+            else:
+                value = {"correct":value}
+        #print("ANSWER", value)
+        return self.makeAnswer(value)
     
     def beginSolution(self):
         raise NotImplementedError
@@ -126,13 +153,12 @@ class Renderer:
     def endSolution(self):
         raise NotImplementedError
 
-    def insertVar(self, var):
-        item = var["value"]
-        if isinstance(item, dict) and item.get("type") == "table":
-            return self.makeTable(item)
+    def insertVar(self, value):
+        if isinstance(value, dict) and value.get("type") == "table":
+            return self.makeTable(value)
         else:
             #print("INSERT VAR", var)
-            return self.renderString(str(item).strip())
+            return self.renderString(str(value).strip())
     
     # Utilities ###############################################################
 
